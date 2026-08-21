@@ -1,0 +1,93 @@
+---
+description: Register typed update, command, sound, and rendering callbacks.
+---
+
+# Callbacks
+
+Callbacks let a script react to Zenith and game events without creating a loop or thread.
+
+## `znt.events.on(name, callback)`
+
+Registers one callback for the current script. Registering the same event again replaces that script's previous callback for the event.
+
+**Signature:** `znt.events.on(name, callback)`
+
+**Valid phase:** top-level registration is recommended
+
+| Argument | Type | Required | Accepted values |
+| --- | --- | --- | --- |
+| `name` | `string` | Yes | `"update"`, `"pre_move"`, `"post_move"`, `"sound"`, or `"render"` |
+| `callback` | `function` | Yes | Function matching the event signature below |
+
+**Returns:** `boolean` — always `true` after successful registration.
+
+**Failure:** an unknown event, empty event name, or non-function callback raises a script error.
+
+```lua
+znt.events.on("update", function()
+    local player = znt.game.local_player()
+    if player then
+        -- Read the latest copied snapshot.
+    end
+end)
+```
+
+## Event signatures
+
+| Event | Callback type | Use it for |
+| --- | --- | --- |
+| `update` | `function()` | General state updates and read-only logic |
+| `pre_move` | `function()` | Aim, look, and input that must share the current command |
+| `post_move` | `function()` | Ordinary input and state-machine follow-ups |
+| `sound` | `function(event: SoundEvent)` | Reactions to queued game sounds |
+| `render` | `function()` | Text, geometry, and specialized overlays |
+
+### `SoundEvent`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `name` | `string` | Sound-event name |
+| `entity_index` | `integer` | Source entity index |
+| `time_ms` | `integer` | Monotonic event timestamp in milliseconds |
+
+```lua
+znt.events.on("sound", function(event)
+    if event.name == "Player.Melee.Hold.Shared" then
+        znt.log("Heavy melee from entity " .. tostring(event.entity_index))
+    end
+end)
+```
+
+The sound queue holds 64 events. When full, the oldest queued event is discarded.
+
+## Phase rules
+
+- `znt.hero.aim()` and `znt.hero.look_at()` are valid only during `pre_move`.
+- `znt.input.tap()`, `hold()`, and `clear()` need an active command, normally `pre_move` or `post_move`.
+- Drawing submissions and `znt.draw.text_size()` are valid only during `render`.
+- Screen queries and `world_to_screen()` may be called from any callback.
+- Menu widgets are valid only inside their registered menu-tab callback.
+
+An error in a callback unloads only the affected script. Each invocation has a 100,000-instruction limit.
+
+## Same-command aim and cast
+
+```lua
+znt.events.on("pre_move", function()
+    local target = znt.hero.targets(120.0, true)[1]
+    if not target then
+        return
+    end
+
+    local aim = znt.hero.aim(target.index, 120.0, 4.0, 4.0, 1, true, 0)
+    if aim and aim.error <= 1.0 then
+        znt.input.tap("ability1")
+    end
+end)
+```
+
+## Related pages
+
+- [Lifecycle and safety](lifecycle-and-safety.md)
+- [Input](input-api.md)
+- [Drawing](drawing-api.md)

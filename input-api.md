@@ -1,0 +1,139 @@
+---
+description: Read activation keys and request supported named game actions.
+---
+
+# Input
+
+The `znt.input` namespace exposes physical activation-key state and a constrained set of named game actions. It does not expose raw command memory.
+
+## Supported action type
+
+`Action` is a case-insensitive `string` with one of these values:
+
+```text
+attack, reload, ability1, ability2, ability3, ability4, parry
+```
+
+Lowercase names are recommended.
+
+## `znt.input.key_down(virtual_key)`
+
+Reads whether a physical key is currently held.
+
+**Signature:** `znt.input.key_down(virtual_key)`
+
+**Valid phase:** top-level code or any callback
+
+| Argument | Type | Required | Accepted values |
+| --- | --- | --- | --- |
+| `virtual_key` | `integer` | Yes | Windows virtual-key code from `0` through `254` |
+
+**Returns:** `boolean`.
+
+**Failure:** an invalid type, fractional number, or value outside the accepted range raises a script error.
+
+```lua
+local activation_key = 0x45 -- E
+
+znt.events.on("pre_move", function()
+    if not znt.input.key_down(activation_key) then
+        return
+    end
+end)
+```
+
+## `znt.input.held(action)`
+
+Reports whether a named action is held in the active game command.
+
+**Signature:** `znt.input.held(action)`
+
+**Valid phase:** `pre_move` or `post_move`
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | `Action` | Yes | Supported named action |
+
+**Returns:** `boolean`; returns `false` when no command is active.
+
+**Failure:** an unsupported action or wrong type raises a script error.
+
+## `znt.input.tap(action)`
+
+Requests a one-command press.
+
+**Signature:** `znt.input.tap(action)`
+
+**Valid phase:** `pre_move` or `post_move`
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | `Action` | Yes | Supported named action |
+
+**Returns:** `boolean` — whether the request was accepted for the active command.
+
+**Failure:** returns `false` when no command is active; an unsupported action or wrong type raises a script error.
+
+## `znt.input.hold(action)`
+
+Keeps a named action active in the current command.
+
+**Signature:** `znt.input.hold(action)`
+
+**Valid phase:** `pre_move` or `post_move`
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | `Action` | Yes | Supported named action |
+
+**Returns:** `boolean` — whether the request was accepted.
+
+**Failure:** returns `false` when no command is active; an unsupported action or wrong type raises a script error.
+
+## `znt.input.clear(action)`
+
+Removes a named action from the current command.
+
+**Signature:** `znt.input.clear(action)`
+
+**Valid phase:** `pre_move` or `post_move`
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | `Action` | Yes | Supported named action |
+
+**Returns:** `boolean` — whether the request was accepted.
+
+**Failure:** returns `false` when no command is active; an unsupported action or wrong type raises a script error.
+
+```lua
+if znt.input.held("attack") and waiting_for_charge then
+    znt.input.clear("attack")
+end
+```
+
+## `znt.input.parry()`
+
+Compatibility shortcut for `znt.input.tap("parry")`.
+
+**Signature:** `znt.input.parry()`
+
+**Arguments:** none
+
+**Valid phase:** `pre_move` or `post_move`
+
+**Returns:** `boolean` — whether the parry request was accepted.
+
+**Failure:** returns `false` when no command is active.
+
+## Timing guidance
+
+Use `pre_move` when aim and input must be applied to the same command. Use `post_move` for ordinary state-machine actions that do not depend on same-command aim.
+
+Requesting an action does not bypass readiness, range, or game rules. Validate those conditions first.
+
+## Related pages
+
+- [Callbacks](callbacks-api.md)
+- [Hero assistance](hero-api.md)
+- [Menu](menu-api.md)
