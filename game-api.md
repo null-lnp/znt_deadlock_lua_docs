@@ -234,6 +234,61 @@ Ability and weapon timestamps use simulation seconds. Compare them with the same
 
 **Failure:** returns `nil` when range data is unavailable. A non-finite or out-of-range index raises a script error.
 
+## Melee state
+
+### `znt.game.melee_state(entity_index)`
+
+**Signature:** `znt.game.melee_state(entity_index)`
+
+**Valid phase:** top-level code or any callback. Poll it from `pre_move` when reaction timing matters.
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `entity_index` | `integer` | Yes | Player entity index |
+
+**Returns:** `MeleeStateSnapshot | nil`.
+
+### `MeleeStateSnapshot`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `valid` | `boolean` | Whether all required replicated fields were resolved |
+| `index` | `integer` | Resolved player index |
+| `active` | `boolean` | A melee input is currently in progress |
+| `charging` | `boolean` | The attack is still in its charge phase |
+| `threatening` | `boolean` | The attack has entered a dash or strike phase and can threaten a target |
+| `hit` | `boolean` | The current attack already registered a hit |
+| `attack_type` | `string` | `none`, `light`, `heavy`, `heavy_air`, or `slide` |
+| `attack_type_id` | `integer` | Replicated numeric attack type |
+| `state` | `string` | `none`, `charging`, `ground_dashing`, `air_dashing`, `attacking`, or `slide_dashing` |
+| `state_id` | `integer` | Replicated numeric attack state |
+| `game_time` | `number` | Attacker simulation time in seconds |
+| `state_started_at` | `number` | Simulation timestamp when the current state began |
+| `attack_started_at` | `number` | Stable simulation timestamp identifying the current attack |
+| `state_age` | `number` | Non-negative seconds spent in the current state |
+
+**Failure:** returns `nil` when the player is unavailable, dead, lacks the standard hold-melee ability, or any required replicated field is unavailable. A non-finite or out-of-range index raises a script error.
+
+The attack type alone is not a timing gate. A heavy melee can remain `charging` for a while; react when `threatening` becomes `true`. Use `attack_started_at` to prevent repeated work for the same swing.
+
+```lua
+local handled = {}
+
+znt.events.on("pre_move", function()
+    for _, player in ipairs(znt.game.players()) do
+        local melee = znt.game.melee_state(player.index)
+        if melee and melee.threatening and not melee.hit then
+            if handled[player.index] ~= melee.attack_started_at then
+                handled[player.index] = melee.attack_started_at
+                -- Validate team, range, facing, and visibility before acting.
+            end
+        elseif not melee or not melee.active then
+            handled[player.index] = nil
+        end
+    end
+end)
+```
+
 ## Related pages
 
 - [Types and conventions](types-and-conventions.md)

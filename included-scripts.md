@@ -8,7 +8,7 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 
 | Script | Demonstrates | Relevant pages |
 | --- | --- | --- |
-| `auto_parry.lua` | Sound callbacks, player snapshots, range, visibility, and parry input | [Callbacks](callbacks-api.md), [Game data](game-api.md), [Input](input-api.md) |
+| `auto_parry.lua` | Replicated light/heavy melee states, player snapshots, range, visibility, and debounced parry input | [Game data](game-api.md), [Input](input-api.md) |
 | `auto_reload.lua` | Weapon timing and named reload input | [Game data](game-api.md), [Input](input-api.md) |
 | `bebop_combo.lua` | Projectile prediction, confirmed hook state, staged input, and objective throws | [Hero assistance](hero-api.md), [Input](input-api.md) |
 | `haze_sleep_dagger.lua` | Hero gating, projectile aim, and same-command casting | [Hero scripting guide](hero-scripting-guide.md) |
