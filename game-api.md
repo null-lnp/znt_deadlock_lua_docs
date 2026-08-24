@@ -209,7 +209,9 @@ Ability and weapon timestamps use simulation seconds. Compare them with the same
 | --- | --- | --- | --- |
 | `entity_index` | `integer` | Yes | Target player or owned entity index |
 
-**Returns:** `boolean` — `true` only when the target resolves and the trace is unobstructed.
+**Returns:** `boolean` — `true` when the target resolves and at least one sampled body trace is unobstructed.
+
+The SDK starts at the active camera, falling back to standing eye height when no camera is available. It tests upper, middle, and lower body heights and excludes both player pawns from the obstruction filter. This avoids close-range false negatives caused by floor-level origins or by the target intersecting its own ray.
 
 **Failure:** unavailable, invalid, or obstructed targets return `false`; a non-number raises a script error.
 
