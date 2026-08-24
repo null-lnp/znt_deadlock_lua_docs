@@ -51,6 +51,16 @@ The script manager provides:
 
 Successfully loaded filenames are remembered between sessions. A failed or manually unloaded script is removed from the saved set.
 
+## View Lua output
+
+Open **Scripts → Console** to see script messages, load/unload events, runtime diagnostics, and callback failures. The page provides:
+
+- **Open console** — a persistent shortcut that opens the menu directly on this page; press it again while the console is selected to close the menu;
+- **Auto-scroll** — follows newly appended entries;
+- **Clear** — removes the current in-menu history.
+
+Debug builds also mirror the same Lua messages to `C:\dev\deadlock\logs.txt`.
+
 ## Set the display name
 
 Add metadata anywhere on its own line:

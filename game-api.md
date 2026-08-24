@@ -266,10 +266,11 @@ Ability and weapon timestamps use simulation seconds. Compare them with the same
 | `state_started_at` | `number` | Simulation timestamp when the current state began |
 | `attack_started_at` | `number` | Stable simulation timestamp identifying the current attack |
 | `state_age` | `number` | Non-negative seconds spent in the current state |
+| `source` | `string` | `"ability"` for a full ability snapshot or `"modifier"` for the remote-player fallback |
 
-**Failure:** returns `nil` when the player is unavailable, dead, lacks the standard hold-melee ability, or any required replicated field is unavailable. A non-finite or out-of-range index raises a script error.
+**Failure:** returns `nil` when the player is unavailable or dead, or when neither a standard hold-melee ability nor a recognized replicated melee modifier can be resolved. A non-finite or out-of-range index raises a script error.
 
-The attack type alone is not a timing gate. A heavy melee can remain `charging` for a while; react when `threatening` becomes `true`. Use `attack_started_at` to prevent repeated work for the same swing.
+The attack type alone is not a timing gate. A heavy melee can remain `charging` for a while; react when `threatening` becomes `true`. Use `attack_started_at` to prevent repeated work for the same swing. Modifier-backed snapshots are conservative and may not carry every ability detail, so use `source` when diagnostics need to distinguish the fallback.
 
 ```lua
 local handled = {}
