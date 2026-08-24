@@ -235,7 +235,9 @@ The SDK starts at the active camera, falling back to standing eye height when no
 | `range` | `number` | Current stat-scaled `MeleeAttackLength` in world units |
 | `half_angle` | `number` | Current `MeleeHalfAngle` in degrees, or `0` when this optional property is unavailable |
 
-**Failure:** returns `nil` when the player, melee slot, or range data is unavailable. A non-finite or out-of-range index raises a script error. A valid range snapshot may still contain `half_angle == 0`; use an explicit conservative fallback rather than treating zero as a real cone.
+The SDK checks the player's ability component first, then the replicated entity list for a hold-melee ability owned by that player. This second path makes remote melee range and angle data available when the component vector omits the ability.
+
+**Failure:** returns `nil` when the player, owned melee entity, or range data is unavailable. A non-finite or out-of-range index raises a script error. A valid range snapshot may still contain `half_angle == 0`; use an explicit conservative fallback rather than treating zero as a real cone.
 
 ## Melee state
 
@@ -271,9 +273,11 @@ The SDK starts at the active camera, falling back to standing eye height when no
 | `state_age` | `number` | Non-negative seconds spent in the current state |
 | `source` | `string` | `"ability"` for a full ability snapshot or `"modifier"` for the remote-player fallback |
 
+The full ability snapshot is resolved from either the player's component vector or an owned hold-melee entity in the replicated entity list. The latter exposes remote light-melee state earlier than its swing sound. Recognized modifiers remain the fallback when no full ability is available.
+
 **Failure:** returns `nil` when the player is unavailable or dead, or when neither a standard hold-melee ability nor a recognized replicated melee modifier can be resolved. A non-finite or out-of-range index raises a script error.
 
-The attack type alone is not a timing gate. A heavy melee can remain `charging` for a while; react when `threatening` becomes `true`. Use `attack_started_at` to prevent repeated work for the same swing. Modifier-backed snapshots are conservative and may not carry every ability detail, so use `source` when diagnostics need to distinguish the fallback.
+Use `active` as the earliest reaction gate for a light melee. A heavy melee can remain `charging` for a while, so wait until `threatening` becomes `true` for heavy attacks. Use `attack_started_at` to prevent repeated work for the same swing. Modifier-backed snapshots are conservative and may not carry every ability detail, so use `source` when diagnostics need to distinguish the fallback.
 
 ```lua
 local handled = {}
@@ -281,7 +285,8 @@ local handled = {}
 znt.events.on("pre_move", function()
     for _, player in ipairs(znt.game.players()) do
         local melee = znt.game.melee_state(player.index)
-        if melee and melee.threatening and not melee.hit then
+        local actionable = melee and (melee.attack_type == "light" and melee.active or melee.threatening)
+        if actionable and not melee.hit then
             if handled[player.index] ~= melee.attack_started_at then
                 handled[player.index] = melee.attack_started_at
                 -- Validate team, range, facing, and visibility before acting.
