@@ -271,11 +271,11 @@ The SDK checks the player's ability component first, then the replicated entity 
 | `state_started_at` | `number` | Simulation timestamp when the current state began |
 | `attack_started_at` | `number` | Stable simulation timestamp identifying the current attack |
 | `state_age` | `number` | Non-negative seconds spent in the current state |
-| `source` | `string` | `"ability"` for a full ability snapshot, `"cooldown"` for a fresh public cooldown-start edge, `"modifier"` for a recognized modifier, or `"animation"` for the version-checked light-melee fallback |
+| `source` | `string` | `"ability"` for a full ability snapshot, `"cooldown"` for a fresh cooldown-start edge, or `"modifier"` for a recognized modifier |
 
-The full ability snapshot is resolved from either the player's component vector or an owned hold-melee entity in the replicated entity list. When the public melee-ability cooldown-start timestamp advances before owner-only detailed melee fields replicate, the SDK emits a minimal `"cooldown"` snapshot with that timestamp in `attack_started_at`. Recognized modifiers remain the next fallback. If an actor omits its melee entity entirely, a supported replicated light-melee animation action can emit an `"animation"` snapshot; unknown animation recipe versions fail closed.
+The full ability snapshot is resolved from either the player's component vector or an owned hold-melee entity in the replicated entity list. When the melee-ability cooldown-start timestamp advances before owner-only detailed melee fields replicate, the SDK emits a minimal `"cooldown"` snapshot with that timestamp in `attack_started_at`. Practice actors that omit their client melee entity use the authoritative cooldown timestamp from the local listen server. Recognized modifiers remain the conservative fallback.
 
-**Failure:** returns `nil` when the player is unavailable or dead, or when no supported ability, cooldown edge, modifier, or animation action can be resolved. A non-finite or out-of-range index raises a script error.
+**Failure:** returns `nil` when the player is unavailable or dead, or when no supported ability, cooldown edge, or modifier can be resolved. A non-finite or out-of-range index raises a script error.
 
 Use `active` as the earliest reaction gate for a light melee. A heavy melee can remain `charging` for a while, so wait until `threatening` becomes `true` for heavy attacks. Use `attack_started_at` to prevent repeated work for the same swing. Modifier-backed snapshots are conservative and may not carry every ability detail, so use `source` when diagnostics need to distinguish the fallback.
 
