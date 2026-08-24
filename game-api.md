@@ -232,9 +232,10 @@ The SDK starts at the active camera, falling back to standing eye height when no
 | --- | --- | --- |
 | `valid` | `boolean` | Whether the range was resolved |
 | `index` | `integer` | Resolved target index |
-| `range` | `number` | Current melee distance |
+| `range` | `number` | Current stat-scaled `MeleeAttackLength` in world units |
+| `half_angle` | `number` | Current `MeleeHalfAngle` in degrees, or `0` when this optional property is unavailable |
 
-**Failure:** returns `nil` when range data is unavailable. A non-finite or out-of-range index raises a script error.
+**Failure:** returns `nil` when the player, melee slot, or range data is unavailable. A non-finite or out-of-range index raises a script error. A valid range snapshot may still contain `half_angle == 0`; use an explicit conservative fallback rather than treating zero as a real cone.
 
 ## Melee state
 

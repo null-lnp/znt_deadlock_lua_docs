@@ -8,7 +8,7 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 
 | Script | Demonstrates | Relevant pages |
 | --- | --- | --- |
-| `auto_parry.lua` | Replicated melee abilities/modifiers, heavy-charge and pre-impact light-swing fallbacks, range, visibility, FOV, diagnostics, and debounced parry input | [Game data](game-api.md), [Input](input-api.md) |
+| `auto_parry.lua` | Replicated melee abilities/modifiers, directional heavy/light fallbacks, live light-melee cone geometry, optional debug-sector drawing, diagnostics, and debounced parry input | [Game data](game-api.md), [Input](input-api.md), [Drawing](drawing-api.md) |
 | `auto_reload.lua` | Weapon timing and named reload input | [Game data](game-api.md), [Input](input-api.md) |
 | `bebop_combo.lua` | Projectile prediction, confirmed hook state, staged input, and objective throws | [Hero assistance](hero-api.md), [Input](input-api.md) |
 | `haze_sleep_dagger.lua` | Hero gating, projectile aim, and same-command casting | [Hero scripting guide](hero-scripting-guide.md) |
@@ -29,7 +29,9 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 | `ignored heavy melee ...` | The fallback expired; the remainder of the message identifies the rejected gate |
 | `ignored light melee ...` | The short light-swing window expired; the remainder identifies the last rejected gate |
 
-Use the detached **Lua Console** while reproducing an issue. A detection entry without a later `parry:` entry means the input request was intentionally gated rather than lost. Heavy charges retain directional facing validation. Confirmed pre-impact light swings use team, range, height, visibility, and FOV without trusting remote bot eye angles, which can remain stale. `Ability.Melee.Impact.Player` is intentionally not used for detection because it arrives after the hit.
+Use the detached **Lua Console** while reproducing an issue. A detection entry without a later `parry:` entry means the input request was intentionally gated rather than lost. Heavy attacks must face the local player even at point blank. Light attacks require the local player to be inside the attacker's forward sector. The sample uses the live `MeleeHalfAngle` when available; the inspected standard melee VData reports a 30° half-angle, and unavailable remote VData falls back conservatively to 37.5°. `Ability.Melee.Impact.Player` is intentionally not used for detection because it arrives after the hit.
+
+Enable **Debug light cone** in the Auto Parry tab to draw that exact sector for 650 ms after a detected light swing. The arc and forward rays are green when the local player is inside the angle, range, and height gates, and red when outside. The label shows the active half-angle and reach in world units. This diagnostic is disabled by default.
 
 ## Locations
 
