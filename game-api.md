@@ -271,9 +271,9 @@ The SDK checks the player's ability component first, then the replicated entity 
 | `state_started_at` | `number` | Simulation timestamp when the current state began |
 | `attack_started_at` | `number` | Stable simulation timestamp identifying the current attack |
 | `state_age` | `number` | Non-negative seconds spent in the current state |
-| `source` | `string` | `"ability"` for a full ability snapshot or `"modifier"` for the remote-player fallback |
+| `source` | `string` | `"ability"` for a full ability snapshot, `"cooldown"` for a fresh public cooldown-start edge, or `"modifier"` for the remote-player fallback |
 
-The full ability snapshot is resolved from either the player's component vector or an owned hold-melee entity in the replicated entity list. The latter exposes remote light-melee state earlier than its swing sound. Recognized modifiers remain the fallback when no full ability is available.
+The full ability snapshot is resolved from either the player's component vector or an owned hold-melee entity in the replicated entity list. When the public melee-ability cooldown-start timestamp advances before owner-only detailed melee fields replicate, the SDK emits a minimal `"cooldown"` snapshot with that timestamp in `attack_started_at`. Recognized modifiers remain the fallback when no full ability is available.
 
 **Failure:** returns `nil` when the player is unavailable or dead, or when neither a standard hold-melee ability nor a recognized replicated melee modifier can be resolved. A non-finite or out-of-range index raises a script error.
 
