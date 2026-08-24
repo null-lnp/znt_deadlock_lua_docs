@@ -244,7 +244,7 @@ Ability and weapon timestamps use simulation seconds. Compare them with the same
 
 | Argument | Type | Required | Description |
 | --- | --- | --- | --- |
-| `entity_index` | `integer` | Yes | Player entity index |
+| `entity_index` | `integer` | Yes | Player entity index from `0` through `32766` |
 
 **Returns:** `MeleeStateSnapshot | nil`.
 
