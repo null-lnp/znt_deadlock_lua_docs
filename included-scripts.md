@@ -8,7 +8,7 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 
 | Script | Demonstrates | Relevant pages |
 | --- | --- | --- |
-| `auto_parry.lua` | Replicated melee abilities/modifiers, heavy-melee sound fallback, range, visibility, diagnostics, and debounced parry input | [Game data](game-api.md), [Input](input-api.md) |
+| `auto_parry.lua` | Replicated melee abilities/modifiers, heavy-charge and pre-impact light-swing fallbacks, range, visibility, diagnostics, and debounced parry input | [Game data](game-api.md), [Input](input-api.md) |
 | `auto_reload.lua` | Weapon timing and named reload input | [Game data](game-api.md), [Input](input-api.md) |
 | `bebop_combo.lua` | Projectile prediction, confirmed hook state, staged input, and objective throws | [Hero assistance](hero-api.md), [Input](input-api.md) |
 | `haze_sleep_dagger.lua` | Hero gating, projectile aim, and same-command casting | [Hero scripting guide](hero-scripting-guide.md) |
@@ -24,10 +24,12 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 | `melee state detected ... [ability]` | The full replicated melee ability supplied the phase |
 | `melee state detected ... [modifier]` | A remote-player melee modifier supplied the fallback phase |
 | `heavy melee detected ... [sound fallback]` | The known heavy-charge sound was received |
+| `light melee detected ... [swing sound fallback: ...]` | A hero's pre-impact light-swing sound was received |
 | `parry: ...` | The script passed its team, range, visibility, FOV, and threat gates and requested parry input |
 | `ignored heavy melee ...` | The fallback expired; the remainder of the message identifies the rejected gate |
+| `ignored light melee ...` | The short light-swing window expired before all threat gates passed |
 
-Use **Scripts → Console** while reproducing an issue. A detection entry without a later `parry:` entry means the input request was intentionally gated rather than lost.
+Use the detached **Lua Console** while reproducing an issue. A detection entry without a later `parry:` entry means the input request was intentionally gated rather than lost. `Ability.Melee.Impact.Player` is intentionally not used for detection because it arrives after the hit.
 
 ## Locations
 

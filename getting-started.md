@@ -53,11 +53,11 @@ Successfully loaded filenames are remembered between sessions. A failed or manua
 
 ## View Lua output
 
-Open **Scripts → Console** to see script messages, load/unload events, runtime diagnostics, and callback failures. The page provides:
+Open **Scripts → Scripts** and use the **Lua Console** launcher, or press its configured shortcut. The console is a separate movable and resizable window, so closing the main menu does not close it. Its toolbar provides:
 
-- **Open console** — a persistent shortcut that opens the menu directly on this page; press it again while the console is selected to close the menu;
 - **Auto-scroll** — follows newly appended entries;
-- **Clear** — removes the current in-menu history.
+- **Clear** — removes the current console history;
+- **Close** — closes only the console window.
 
 Debug builds also mirror the same Lua messages to `C:\dev\deadlock\logs.txt`.
 

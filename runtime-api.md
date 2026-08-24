@@ -34,7 +34,7 @@ This value is informational and may change without changing the SDK contract.
 
 ## `znt.log(message)`
 
-Writes one script-scoped message to **Scripts → Console**. Debug builds also mirror it to `C:\dev\deadlock\logs.txt`.
+Writes one script-scoped message to the detached **Lua Console**. Debug builds also mirror it to `C:\dev\deadlock\logs.txt`.
 
 **Signature:** `znt.log(message)`
 

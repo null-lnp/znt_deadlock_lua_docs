@@ -18,7 +18,7 @@ Hover the script name or **Retry** button for the complete message. Fix the file
 
 A top-level or callback error unloads only the affected script. Its callbacks and custom tabs are removed until Retry succeeds.
 
-Open **Scripts → Console** for the chronological Lua-only log. It shows script messages, runtime diagnostics, load/unload events, and the reason a failed callback was unloaded. Configure **Open console** on that page for a direct shortcut. Debug builds also retain the entries in `C:\dev\deadlock\logs.txt`.
+Open the detached **Lua Console** from **Scripts → Scripts**, or use its configured shortcut, for the chronological Lua-only log. It shows script messages, runtime diagnostics, load/unload events, and the reason a failed callback was unloaded. Closing the main menu does not close the console. Debug builds also retain the entries in `C:\dev\deadlock\logs.txt`.
 
 Common causes are:
 
