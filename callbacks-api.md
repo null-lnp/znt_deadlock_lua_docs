@@ -39,7 +39,7 @@ end)
 | `update` | `function()` | General state updates and read-only logic |
 | `pre_move` | `function()` | Aim, look, and input that must share the current command |
 | `post_move` | `function()` | Ordinary input and state-machine follow-ups |
-| `sound` | `function(event: SoundEvent)` | Reactions to queued game sounds |
+| `sound` | `function(event: SoundEvent)` | Reactions to queued game sounds before the next command is built |
 | `render` | `function()` | Text, geometry, and specialized overlays |
 
 ### `SoundEvent`
@@ -57,6 +57,8 @@ znt.events.on("sound", function(event)
     end
 end)
 ```
+
+Sound messages are captured before the game applies them. Zenith drains the queue immediately before the next `pre_move` callback, while that command's input-mutation window is active. A `sound` callback may therefore call `znt.input.tap()`, `hold()`, `clear()`, or `parry()` directly, or record state that the immediately following `pre_move` callback consumes; both approaches affect the same command. Network transit time still applies—the callback cannot run before the remote event reaches the client.
 
 The sound queue holds 64 events. When full, the oldest queued event is discarded.
 
