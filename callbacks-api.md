@@ -40,7 +40,7 @@ end)
 | `pre_move` | `function()` | Aim, look, and input that must share the current command |
 | `post_move` | `function()` | Ordinary input and state-machine follow-ups |
 | `sound` | `function(event: SoundEvent)` | Reactions to queued game sounds before the next command is built |
-| `entity_created` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot after an entity is added |
+| `entity_created` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot captured at the start of the engine's add notification |
 | `entity_deleted` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot captured before an entity is removed |
 | `render` | `function()` | Text, geometry, and specialized overlays |
 
@@ -94,7 +94,13 @@ znt.events.on("entity_deleted", function(event)
 end)
 ```
 
-Zenith copies lifecycle data in the engine hook and queues it; Lua never runs inside entity creation or deletion. The queue is drained immediately before the next `pre_move`, so the entity referenced by a delete event may already be gone. Treat every field as diagnostic snapshot data and never assume `znt.game.player(event.entity_index)` still resolves. The lifecycle queue holds 128 events and discards the oldest event when full.
+For creation, Zenith reads identity directly from the entity supplied by the engine before the remaining add-notification work runs. Deletion is captured before the identity is invalidated. Lua never runs inside either engine notification: copied events are queued and drained immediately before the next `pre_move`. The entity referenced by a delete event may therefore already be gone. Treat every field as diagnostic snapshot data and never assume `znt.game.player(event.entity_index)` still resolves. The lifecycle queue holds 128 events and discards the oldest event when full.
+
+Loading a script does not replay entities that already exist. Only lifecycle notifications received after the native hooks are active produce callbacks.
+
+{% hint style="info" %}
+Debug builds record lifecycle callback registration plus native queue and drain stages in the diagnostic log. Messages written with `znt.log()` appear in the Lua Console. These signals distinguish a missing engine event from a registered callback that script logic filtered out.
+{% endhint %}
 
 ## Phase rules
 
