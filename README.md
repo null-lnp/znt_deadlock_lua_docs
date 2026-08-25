@@ -3,7 +3,7 @@
 Build custom Zenith gameplay logic with safe game snapshots, callbacks, named input actions, hero assistance, damage prediction, drawing primitives, and native menu controls.
 
 {% hint style="info" %}
-This book documents Lua SDK version **11**.
+This book documents Lua SDK version **12**.
 {% endhint %}
 
 Scripts run in isolated LuaJIT states and cannot access arbitrary memory, files, DLLs, engine functions, or raw command masks. A failing script is unloaded without taking down other loaded scripts.
@@ -20,8 +20,9 @@ Scripts run in isolated LuaJIT states and cannot access arbitrary memory, files,
 | Namespace | Page | Purpose |
 | --- | --- | --- |
 | `znt` | [Runtime](runtime-api.md) | SDK version, runtime metadata, and logging |
+| `znt.shared` | [Runtime](runtime-api.md#shared-activity-modes) | Boolean activity modes shared safely between isolated scripts |
 | `znt.events` | [Callbacks](callbacks-api.md) | Update, command, sound, and rendering callbacks |
-| `znt.game` | [Game data](game-api.md) | Hero, player, ability, weapon, visibility, and timing snapshots |
+| `znt.game` | [Game data](game-api.md) | Hero, player, ability, active-item, weapon, visibility, and timing snapshots |
 | `znt.input` | [Input](input-api.md) | Activation keys and supported named game actions |
 | `znt.hero` | [Hero assistance](hero-api.md) | Targets, aim, projectile prediction, range, and hero helpers |
 | `znt.damage` | [Damage](damage-api.md) | Reviewed ability prediction and typed-damage evaluation |

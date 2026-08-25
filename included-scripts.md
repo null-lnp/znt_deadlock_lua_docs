@@ -10,7 +10,8 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 | --- | --- | --- |
 | `auto_parry.lua` | Replicated melee abilities/modifiers, live local parry readiness, independently selectable heavy/light handling, directional fallbacks, live light-melee cone geometry, optional debug-sector drawing, and accepted-request debouncing | [Game data](game-api.md), [Input](input-api.md), [Drawing](drawing-api.md), [Menu](menu-api.md) |
 | `auto_reload.lua` | Weapon timing and named reload input | [Game data](game-api.md), [Input](input-api.md) |
-| `bebop_combo.lua` | Projectile prediction, confirmed hook state, staged input, and objective throws | [Hero assistance](hero-api.md), [Input](input-api.md) |
+| `activator.lua` | Active-item discovery, cooldown-edge handling, shared combo modes, and named item input | [Runtime](runtime-api.md), [Game data](game-api.md), [Input](input-api.md) |
+| `bebop_combo.lua` | Immediate/double Bomb setup, shared combo modes, projectile prediction, confirmed Hook state, and objective throws | [Runtime](runtime-api.md), [Hero assistance](hero-api.md), [Input](input-api.md) |
 | `haze_sleep_dagger.lua` | Hero gating, projectile aim, and same-command casting | [Hero scripting guide](hero-scripting-guide.md) |
 | `shiv_serrated_knives.lua` | Charge-aware projectile assistance | [Hero assistance](hero-api.md), [Game data](game-api.md) |
 | `vindicta_snipe.lua` | Damage prediction, scope timing, input ownership, and damage preview drawing | [Damage](damage-api.md), [Drawing](drawing-api.md) |
@@ -24,6 +25,14 @@ The SDK resolves remote hold-melee abilities from owned entity-list entries when
 Enable **Debug light cone** in the Auto Parry tab to draw that exact sector for 650 ms after a detected light swing. The arc and forward rays are green when the local player is inside the angle, range, and height gates, and red when outside. The label shows the active half-angle and reach in world units. This diagnostic is disabled by default.
 
 The sample does not emit routine detection, rejection, or parry logs, keeping the Lua Console clear for errors and explicit script diagnostics.
+
+## Activator and Bebop combo
+
+Activator defaults to **Ability 2** and the **E** combo key. It becomes active while that key is held or another loaded script publishes the shared `combo` mode. Once the selected ability enters a real cooldown, Activator searches all four active-item slots for Echo Shard (`upgrade_ability_power_shard`). If the item is ready, it taps the resolved slot once and waits for ability readiness before it can handle another cooldown cycle.
+
+Bebop publishes the `combo` mode while its own key is held and through an owned sequence. When a visible target is already inside Sticky Bomb range, it plants Bomb immediately. It observes the cooldown edge, allows Activator to reset Bomb, plants a second Bomb when readiness returns, then proceeds into the predicted Hook. If no reset arrives within the bounded opening window, it continues to Hook instead of waiting indefinitely. A confirmed latch still owns the pull, optional Guardian/Walker turn, available Bomb, and Uppercut follow-up after the key is released.
+
+The scripts remain independent. Their combo keys default to the same value, while the shared mode lets Activator follow a customized Bebop key after Bebop publishes the state.
 
 ## Locations
 

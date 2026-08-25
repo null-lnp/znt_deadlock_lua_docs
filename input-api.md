@@ -11,10 +11,13 @@ The `znt.input` namespace exposes physical activation-key state and a constraine
 `Action` is a case-insensitive `string` with one of these values:
 
 ```text
-attack, reload, ability1, ability2, ability3, ability4, parry
+attack, reload, ability1, ability2, ability3, ability4,
+item1, item2, item3, item4, parry
 ```
 
 Lowercase names are recommended.
+
+`item1` through `item4` map to active-item inventory slots `1` through `4`. Resolve an item's current slot with `znt.game.active_item()` rather than assuming its position.
 
 ## `znt.input.key_down(virtual_key)`
 

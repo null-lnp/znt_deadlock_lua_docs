@@ -69,7 +69,7 @@ Never treat an unavailable prediction as zero. Review the full [Damage](damage-a
 
 ## Timers behave incorrectly
 
-Use `znt.game.time_ms()` for script timers. Use an ability or weapon snapshot's `game_time` for its simulation timestamps. Do not subtract milliseconds from simulation seconds.
+Use `znt.game.time_ms()` for script timers. Use an ability, active-item, or weapon snapshot's `game_time` for its simulation timestamps. Do not subtract milliseconds from simulation seconds.
 
 ## A menu widget fails
 
@@ -86,6 +86,7 @@ Use `znt.game.time_ms()` for script timers. Use an ability or weapon snapshot's 
 | --- | --- |
 | Discovered scripts | 32 |
 | Custom tabs per script | 4 |
+| Shared modes per script | 8 |
 | Custom script tabs | 31 |
 | Player snapshots per `players()` call | 24 |
 | Queued sound events | 64 |

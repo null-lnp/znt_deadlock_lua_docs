@@ -6,6 +6,8 @@ description: Understand isolated states, callback phases, copied data, hero gati
 
 Each loaded file receives its own Lua state, globals, callbacks, aim history, and menu tabs.
 
+Globals never cross that boundary. The only script-to-script coordination channel is the boolean [shared-mode API](runtime-api.md#shared-activity-modes), whose values are owned and cleaned up per script.
+
 ## Lifecycle
 
 ```mermaid

@@ -166,6 +166,53 @@ if not ability or not ability.ready or ability.charges == 0 then
 end
 ```
 
+## Active items
+
+### `znt.game.active_item(slot)`
+
+**Signature:** `znt.game.active_item(slot)`
+
+**Valid phase:** top-level code or any callback
+
+| Argument | Type | Required | Accepted values |
+| --- | --- | --- | --- |
+| `slot` | `integer` | Yes | Active-item inventory slot `1` through `4` |
+
+**Returns:** `ActiveItemSnapshot | nil`.
+
+**Failure:** returns `nil` when the slot is empty or its item cannot be resolved. An invalid slot, fractional number, or wrong argument type raises a script error.
+
+### `ActiveItemSnapshot`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `present` | `boolean` | Active-item ability entity is available |
+| `ready` | `boolean` | Replicated item cooldown has elapsed |
+| `slot` | `integer` | Active-item slot from `1` through `4` |
+| `designer_name` | `string` | Stable internal item identifier |
+| `charges` | `integer` | Replicated remaining charge count |
+| `game_time` | `number` | Current local simulation time in seconds |
+| `cooldown_remaining` | `number` | Remaining cooldown in seconds, clamped at zero |
+
+Do not assume an item occupies a fixed slot. Search all four snapshots by `designer_name`, then use the returned `slot` with the matching named item action:
+
+```lua
+local echo_shard = nil
+
+for slot = 1, 4 do
+    local item = znt.game.active_item(slot)
+    if item and item.designer_name == "upgrade_ability_power_shard" then
+        echo_shard = item
+        break
+    end
+end
+if echo_shard and echo_shard.ready then
+    znt.input.tap("item" .. echo_shard.slot)
+end
+```
+
+`ready` describes cooldown state only. Range, targets, silences, and other game rules may still reject an item use.
+
 ## Primary weapon
 
 ### `znt.game.weapon()`
@@ -195,7 +242,7 @@ end
 | `reload_available_at` | `number` | Active Reload availability time |
 
 {% hint style="warning" %}
-Ability and weapon timestamps use simulation seconds. Compare them with the same snapshot's `game_time`, not `znt.game.time_ms()`.
+Ability, active-item, and weapon timestamps use simulation seconds. Compare them with the same snapshot's `game_time`, not `znt.game.time_ms()`.
 {% endhint %}
 
 ## Parry readiness
