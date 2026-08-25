@@ -1,5 +1,5 @@
 ---
-description: Add native tabs and typed persistent checkboxes, sliders, selectors, keybinds, and text.
+description: Add native tabs and typed persistent checkboxes, sliders, single- and multi-selectors, keybinds, and text.
 ---
 
 # Menu
@@ -130,6 +130,36 @@ local style = znt.menu.combo("aim_style", "Aim style", 0, {
 })
 ```
 
+## `znt.menu.multiselect(key, label, default_mask, options)`
+
+**Signature:** `znt.menu.multiselect(key, label, default_mask, options)`
+
+**Valid phase:** registered menu-tab callback only
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `key` | `string` | Yes | Stable setting key unique within the script |
+| `label` | `string` | Yes | Visible control label |
+| `default_mask` | `integer` | Yes | Non-negative initial selection bitmask |
+| `options` | `string[]` | Yes | One-based Lua array containing 1 through 16 non-empty labels; each label is at most 63 bytes |
+
+**Returns:** `integer` — current persisted selection mask. Bit `0` controls `options[1]`, bit `1` controls `options[2]`, and so on.
+
+**Failure:** an empty or oversized option list, a default mask containing a bit without a corresponding option, invalid strings, an overlong composed key, or the wrong callback phase raises a script error.
+
+```lua
+local MELEE_HEAVY = 1
+local MELEE_LIGHT = 2
+local selected = znt.menu.multiselect(
+    "melee_types",
+    "Melee types",
+    MELEE_HEAVY + MELEE_LIGHT,
+    {"Heavy", "Light"})
+
+local heavy_enabled = selected % (MELEE_HEAVY * 2) >= MELEE_HEAVY
+local light_enabled = selected % (MELEE_LIGHT * 2) >= MELEE_LIGHT
+```
+
 ## `znt.menu.keybind(key, label, default_key)`
 
 **Signature:** `znt.menu.keybind(key, label, default_key)`
@@ -165,12 +195,14 @@ local style = znt.menu.combo("aim_style", "Aim style", 0, {
 ```lua
 local enabled = true
 local aim_style = 0
+local target_types = 3
 local fov = 120.0
 local activation_key = 0x45
 
 znt.menu.add_hero_tab("Haze", "Sleep Dagger", function()
     enabled = znt.menu.checkbox("enabled", "Enabled", true)
     aim_style = znt.menu.combo("aim_style", "Aim style", 0, {"Regular", "pSilent"})
+    target_types = znt.menu.multiselect("target_types", "Targets", 3, {"Players", "Souls"})
     fov = znt.menu.slider_float("fov", "FOV", 120.0, 20.0, 360.0)
     activation_key = znt.menu.keybind("key", "Activation key", 0x45)
 end)
@@ -183,6 +215,7 @@ end)
 | Custom tabs per script | 4 |
 | Custom script tabs in the menu | 31 |
 | Combo options | 16 |
+| Multiselect options | 16 |
 
 ## Related pages
 

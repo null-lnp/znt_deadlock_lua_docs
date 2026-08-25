@@ -3,7 +3,7 @@
 Build custom Zenith gameplay logic with safe game snapshots, callbacks, named input actions, hero assistance, damage prediction, drawing primitives, and native menu controls.
 
 {% hint style="info" %}
-This book documents Lua SDK version **10**.
+This book documents Lua SDK version **11**.
 {% endhint %}
 
 Scripts run in isolated LuaJIT states and cannot access arbitrary memory, files, DLLs, engine functions, or raw command masks. A failing script is unloaded without taking down other loaded scripts.
