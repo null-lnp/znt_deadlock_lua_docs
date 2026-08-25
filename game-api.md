@@ -153,6 +153,9 @@ end
 | `game_time` | `number` | Current simulation time in seconds |
 | `cooldown_remaining` | `number` | Remaining cooldown in seconds |
 | `charge_recharge_remaining` | `number` | Seconds until the next charge |
+| `radius` | `number` | Reviewed live effect radius after upgrades and contextual Tech Range scaling, in world units; currently supported for Victor's Pain Aura, otherwise `0` |
+| `toggle_state_known` | `boolean` | Whether the SDK has an authoritative replicated on/off state for this toggle ability |
+| `toggle_active` | `boolean` | Authoritative active state when `toggle_state_known` is `true`; otherwise `false` |
 | `scoped` | `boolean` | Current scoped state where supported |
 | `scope_started_at` | `number` | Simulation time at which scope began |
 | `projectile_speed` | `number` | Live projectile speed |
@@ -163,6 +166,16 @@ end
 local ability = znt.game.ability(1)
 if not ability or not ability.ready or ability.charges == 0 then
     return
+end
+```
+
+Check `toggle_state_known` before using `toggle_active` as a decision gate. Victor's Pain Aura exposes its live stat-scaled radius and replicated modifier-backed toggle state:
+
+```lua
+local aura = znt.game.ability(3)
+
+if aura and aura.radius > 0 and aura.toggle_state_known and aura.toggle_active then
+    -- Pain Aura is currently active. One meter is 100 world units.
 end
 ```
 

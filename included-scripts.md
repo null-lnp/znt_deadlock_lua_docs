@@ -14,6 +14,7 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 | `bebop_combo.lua` | Immediate/double Bomb setup, shared combo modes, projectile prediction, confirmed Hook state, and objective throws | [Runtime](runtime-api.md), [Hero assistance](hero-api.md), [Input](input-api.md) |
 | `haze_sleep_dagger.lua` | Hero gating, projectile aim, and same-command casting | [Hero scripting guide](hero-scripting-guide.md) |
 | `shiv_serrated_knives.lua` | Charge-aware projectile assistance | [Hero assistance](hero-api.md), [Game data](game-api.md) |
+| `victor.lua` | One-request-per-hold casting, live stat-scaled radius checks, replicated toggle confirmation, and projected world-radius diagnostics | [Game data](game-api.md), [Input](input-api.md), [Drawing](drawing-api.md) |
 | `vindicta_snipe.lua` | Damage prediction, scope timing, input ownership, and damage preview drawing | [Damage](damage-api.md), [Drawing](drawing-api.md) |
 
 ## Auto Parry controls
@@ -39,6 +40,14 @@ Bebop publishes the `combo` mode while its own key is held and through an owned 
 The cursor status distinguishes **HOOK NOT READY**, **CASTING**, **HOOK OUT**, and **PULLING**. A Hook request becomes **HOOK OUT** only after replicated readiness or cooldown confirms that the game accepted the cast; the replicated victim handle confirms a successful latch. Hook visuals are not assumed to be client entities. The sample intentionally leaves the global entity-lifecycle stream unsubscribed so unrelated world-prop churn does not fill the Lua Console.
 
 The scripts remain independent. Selecting the same physical key in Activator and Bebop lets them cooperate through their own key state without sharing Lua globals.
+
+## Victor
+
+Victor requests Shock once during each combo-key hold. While the key remains held, Pain Aura is enabled only when an alive enemy's full 3D distance is within the ability's live `Radius` plus the configured tolerance. Radius upgrades and Tech Range modifiers come from the current `AbilitySnapshot`; the script does not contain a per-level range table.
+
+The replicated Pain Aura modifier confirms whether the toggle is actually active. Once active, cleanup no longer depends on the combo key: after the last enemy leaves the effective radius, the script requests deactivation and waits for replicated confirmation before issuing another toggle request.
+
+**Debug radius** projects two world-space rings around Victor. The stronger inner ring is the exact live game radius; the subtle outer ring is `R + tolerance`. The label reports both values in meters and the confirmed `ON` or `OFF` state.
 
 ## Locations
 
