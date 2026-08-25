@@ -43,7 +43,9 @@ The scripts remain independent. Selecting the same physical key in Activator and
 
 ## Victor
 
-Victor requests Shock once during each combo-key hold. While the key remains held, Pain Aura is enabled only when an alive enemy's full 3D distance is within the ability's live `Radius` plus the configured tolerance. Radius upgrades and Tech Range modifiers come from the current `AbilitySnapshot`; the script does not contain a per-level range table.
+Victor locks a visible Shock target inside the selected FOV, validates the live projectile range and path, prepares predicted Regular or pSilent aim, and submits the cast only after that aim is ready in the same command. Shock runs once per combo-key hold. The optional max-upgrade health gate requires at least 15% missing local health only when the replicated upgrade level is `4`; lower ability levels always cast normally because they do not yet have the missing-health heal upgrade.
+
+While the key remains held, Pain Aura is enabled only when an alive enemy's full 3D distance is within the ability's live `Radius` plus the configured tolerance. Radius upgrades and Tech Range modifiers come from the current `AbilitySnapshot`; the script does not contain a per-level range table.
 
 The replicated Pain Aura modifier confirms whether the toggle is actually active. Once active, cleanup no longer depends on the combo key: after the last enemy leaves the effective radius, the script requests deactivation and waits for replicated confirmation before issuing another toggle request.
 
