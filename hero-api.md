@@ -69,6 +69,8 @@ Revalidates a target, visibility, FOV, and optional projectile data, then prepar
 | `index` | `integer` | Revalidated target index |
 | `error` | `number` | Remaining angular error in degrees |
 
+pSilent synchronizes the generated command and every local angle source an ability may consume while CreateMove processes that command, then restores the visible camera and pawn angles immediately afterward. Delayed-launch abilities must continue calling `znt.hero.aim()` until their live `cast_delay` has elapsed so the eventual launch command retains the target direction.
+
 **Failure:** returns `nil` outside an active `pre_move` input context or when the target cannot be validated. Invalid types or ranges raise a script error.
 
 {% hint style="info" %}

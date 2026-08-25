@@ -151,6 +151,7 @@ end
 | `charges` | `integer` | Current charge count |
 | `upgrade_level` | `integer` | Current displayed ability level |
 | `game_time` | `number` | Current simulation time in seconds |
+| `cast_delay` | `number` | Live delay between an accepted cast request and ability launch, in seconds; `0` for an immediate cast |
 | `cooldown_remaining` | `number` | Remaining cooldown in seconds |
 | `charge_recharge_remaining` | `number` | Seconds until the next charge |
 | `radius` | `number` | Reviewed live effect radius after upgrades and contextual Tech Range scaling, in world units; currently supported for Victor's Pain Aura, otherwise `0` |
