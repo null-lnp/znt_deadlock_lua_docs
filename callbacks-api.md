@@ -40,8 +40,8 @@ end)
 | `pre_move` | `function()` | Aim, look, and input that must share the current command |
 | `post_move` | `function()` | Ordinary input and state-machine follow-ups |
 | `sound` | `function(event: SoundEvent)` | Reactions to queued game sounds before the next command is built |
-| `entity_created` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot when a new full handle appears in the entity list |
-| `entity_deleted` | `function(event: EntityLifecycleEvent)` | Observe the cached snapshot when a full handle disappears or is replaced |
+| `entity_created` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot when a networkable entity is added |
+| `entity_deleted` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot when a networkable entity is removed |
 | `render` | `function()` | Text, geometry, and specialized overlays |
 
 ### `SoundEvent`
@@ -94,12 +94,12 @@ znt.events.on("entity_deleted", function(event)
 end)
 ```
 
-Zenith reads the entity list directly once per game update and reconciles full handles, including their serial values, against the previous snapshot. A new handle produces creation, a missing handle produces deletion, and reusing an index with a new serial produces deletion followed by creation. Designer and class names are cached while the entity is valid, so deletion never needs to dereference an object that has already been destroyed. Copied events are queued and drained immediately before the next `pre_move`. The entity referenced by a delete event may therefore already be gone. Treat every field as diagnostic snapshot data and never assume `znt.game.player(event.entity_index)` still resolves. The lifecycle queue holds 128 events and discards the oldest event when full.
+Zenith captures the game's networkable add/remove notifications at their native C++ entry points and copies the entity identity before Lua runs. It also reconciles full handles from the direct entity-list snapshot once per game update as a fallback. A new fallback handle produces creation, a missing handle produces deletion, and reusing an index with a new serial produces deletion followed by creation. Duplicate native/fallback observations for the same event and full handle are collapsed. Designer and class names are copied while the entity is valid, so deletion never needs to dereference an object that has already been destroyed. Events are queued and drained immediately before the next `pre_move`. The entity referenced by a delete event may therefore already be gone. Treat every field as diagnostic snapshot data and never assume `znt.game.player(event.entity_index)` still resolves. The lifecycle queue holds 128 events and discards the oldest event when full.
 
-The first successful snapshot establishes a baseline, and loading a script does not replay entities that already exist. An entity whose complete lifetime falls between two game-update snapshots cannot produce a lifecycle callback.
+The first successful entity-list snapshot establishes a fallback baseline, and loading a script does not replay entities that already exist. A non-networkable entity whose complete lifetime falls between two game-update snapshots cannot produce a lifecycle callback.
 
 {% hint style="info" %}
-Debug builds record native detection as `entity lifecycle: stage=detect source=list_diff`, followed by the Lua queue and drain stages. Messages written with `znt.log()` appear in the Lua Console. These signals distinguish a missing native observation from a registered callback that script logic filtered out.
+Debug builds record native entry as `entity lifecycle: stage=hook_entry source=native_hook`; fallback detection uses `stage=detect source=list_diff`. Both are followed by the Lua queue and drain stages. Messages written with `znt.log()` appear in the Lua Console. These signals distinguish a missing native observation from a registered callback that script logic filtered out.
 {% endhint %}
 
 ## Phase rules
