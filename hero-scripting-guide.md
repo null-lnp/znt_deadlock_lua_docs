@@ -109,7 +109,7 @@ flowchart TD
 
 ### Gate behavior, not just the tab
 
-`znt.menu.add_hero_tab()` supplies the hero portrait. It does not determine whether callbacks execute. `znt.game.is_hero()` keeps the logic dormant for other heroes, so every hero script may remain loaded safely.
+`znt.menu.add_hero_tab()` registers the script as champion-specific, supplies the portrait, and keeps its sidebar tab hidden unless the local hero matches. It does not determine whether callbacks execute. `znt.game.is_hero()` keeps the logic dormant for other heroes, so every hero script may remain loaded safely.
 
 ### Refresh transient data
 

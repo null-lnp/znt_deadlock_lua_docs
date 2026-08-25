@@ -6,6 +6,8 @@ description: Learn which SDK patterns are demonstrated by the scripts included w
 
 Zenith includes focused scripts that demonstrate complete SDK workflows. Use them as references when starting a script with similar behavior.
 
+Auto Parry, Auto Reload, and Activator are utility scripts, so their tabs stay visible for every hero. Bebop, Haze, Shiv, Victor, and Vindicta are champion scripts; they may all remain loaded, while the sidebar shows only the entry matching the current local hero.
+
 | Script | Demonstrates | Relevant pages |
 | --- | --- | --- |
 | `auto_parry.lua` | Replicated melee abilities/modifiers, live local parry readiness, independently selectable heavy/light handling, directional fallbacks, live light-melee cone geometry, optional debug-sector drawing, and accepted-request debouncing | [Game data](game-api.md), [Input](input-api.md), [Drawing](drawing-api.md), [Menu](menu-api.md) |

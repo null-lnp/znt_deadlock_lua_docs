@@ -8,9 +8,20 @@ The `znt.menu` namespace lets a script add native controls under **Scripts**. Re
 
 Widget values persist between sessions. Keys are automatically namespaced by script filename, so different scripts may use the same local key.
 
+## Script classification
+
+The first tab call registers the containing script as one of two types:
+
+| Registration | Script type | Sidebar visibility |
+| --- | --- | --- |
+| `znt.menu.add_tab(...)` or `znt.menu.add_item_tab(...)` | Utility | Visible for every local hero |
+| `znt.menu.add_hero_tab(hero, ...)` | Champion | Visible only when the local hero matches `hero` |
+
+One script cannot mix utility and champion registrations or register champion tabs for multiple heroes. Either case raises a script error and unloads the affected script. A hidden champion tab does not suspend callbacks; keep `znt.game.is_hero(hero)` in every hero-specific execution path.
+
 ## `znt.menu.add_tab(name, callback)`
 
-Adds a generic script tab.
+Adds a generic script tab and registers the containing script as a utility.
 
 **Signature:** `znt.menu.add_tab(name, callback)`
 
@@ -34,7 +45,7 @@ end)
 
 ## `znt.menu.add_hero_tab(hero, name, callback)`
 
-Adds a script tab associated with a hero portrait.
+Adds a script tab associated with a hero portrait and registers the containing script as a champion script. The tab enters the sidebar only while the local hero matches `hero`.
 
 **Signature:** `znt.menu.add_hero_tab(hero, name, callback)`
 
@@ -51,12 +62,12 @@ Adds a script tab associated with a hero portrait.
 **Failure:** unknown hero data, invalid arguments, or exceeding tab limits raises a script error.
 
 {% hint style="warning" %}
-A hero tab changes presentation only. It does not stop callbacks on other heroes. Guard logic with `znt.game.is_hero()`.
+Hero filtering changes sidebar visibility only. It does not stop callbacks on other heroes. Guard logic with `znt.game.is_hero()`.
 {% endhint %}
 
 ## `znt.menu.add_item_tab(designer_name, name, callback)`
 
-Adds a script tab associated with an item icon.
+Adds a utility-script tab associated with an item icon.
 
 **Signature:** `znt.menu.add_item_tab(designer_name, name, callback)`
 
@@ -273,6 +284,7 @@ end)
 | --- | --- |
 | Custom tabs per script | 4 |
 | Custom script tabs in the menu | 31 |
+| Script classifications | One utility type or one champion hero per script |
 | Combo options | 16 |
 | Multiselect options | 16 |
 
