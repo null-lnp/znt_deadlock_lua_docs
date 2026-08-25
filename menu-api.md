@@ -84,7 +84,7 @@ An item tab changes presentation only. Search `znt.game.active_item(1)` through 
 
 ## `znt.menu.item_section(designer_name, label)`
 
-Adds a compact, non-interactive item header inside the current tab. Known items use their real item-atlas icon; unsupported designer names use the generic script icon. This keeps multi-item hosts on one sidebar page while preserving a clear visual boundary for each rule.
+Ends the current settings card and begins a separate item card inside the same tab. Its compact, non-interactive header uses the real item-atlas icon when known; unsupported designer names use the generic script icon. This keeps multi-item hosts on one sidebar page while preserving a clear visual boundary for each rule.
 
 **Signature:** `znt.menu.item_section(designer_name, label)`
 
@@ -111,7 +111,7 @@ znt.menu.add_tab("Activator", function()
 end)
 ```
 
-`item_section()` affects presentation and search grouping only. It does not locate, equip, activate, or validate the item.
+Every call creates a new visually separated card for the controls that follow it. `item_section()` otherwise affects presentation and search grouping only; it does not locate, equip, activate, or validate the item.
 
 ## `znt.menu.checkbox(key, label, default)`
 
