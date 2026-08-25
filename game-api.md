@@ -241,6 +241,8 @@ end
 
 Imbuement fields come from the live replicated association selected when the item was purchased. A script should not ask the user to select the same ability again. `ready` describes cooldown state only, while `selected` confirms that a targeted item is actually being held. Range, targets, silences, and other game rules may still reject an item use; confirm activation through subsequent item or ability snapshots.
 
+Friendly-target items that support self-cast still use two confirmed commands: request the resolved `itemN` action, wait until that same snapshot reports `selected = true`, then request `znt.input.tap("alt_cast")`. Do not send `alt_cast` in the same callback that first requests item selection.
+
 ## Primary weapon
 
 ### `znt.game.weapon()`

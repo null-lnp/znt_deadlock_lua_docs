@@ -78,7 +78,8 @@ znt.game.is_hero(13)
 Input functions accept these case-insensitive strings:
 
 ```text
-attack, reload, ability1, ability2, ability3, ability4, parry
+attack, reload, ability1, ability2, ability3, ability4,
+item1, item2, item3, item4, parry, alt_cast
 ```
 
 The lowercase forms are recommended for consistency.

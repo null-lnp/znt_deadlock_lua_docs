@@ -12,12 +12,14 @@ The `znt.input` namespace exposes physical activation-key state and a constraine
 
 ```text
 attack, reload, ability1, ability2, ability3, ability4,
-item1, item2, item3, item4, parry
+item1, item2, item3, item4, parry, alt_cast
 ```
 
 Lowercase names are recommended.
 
 `item1` through `item4` map to active-item inventory slots `1` through `4`. Resolve an item's current slot with `znt.game.active_item()` rather than assuming its position.
+
+`alt_cast` requests the game's alternate-cast action. Use it after a friendly-target item reports `selected = true` when the intended target is the local player. It follows the game action rather than a physical mouse binding.
 
 ## `znt.input.key_down(virtual_key)`
 
@@ -130,6 +132,18 @@ Readiness-aware shortcut for requesting the named `parry` action.
 **Failure:** returns `false` when `znt.game.parry_state()` is unavailable or not ready, or when no command is active.
 
 Use `znt.game.parry_state()` when a script also needs the live cooldown value. `znt.input.tap("parry")` remains the lower-level named-action request and does not perform this readiness check.
+
+## Self-cast item example
+
+Select a friendly-target item through its resolved live slot, then wait for replicated selection before requesting `alt_cast`:
+
+```lua
+if item.ready and not item.selected then
+    znt.input.tap("item" .. item.slot)
+elseif item.ready and item.selected then
+    znt.input.tap("alt_cast")
+end
+```
 
 ## Timing guidance
 
