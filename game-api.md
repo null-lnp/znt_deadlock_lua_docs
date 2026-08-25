@@ -198,6 +198,41 @@ end
 Ability and weapon timestamps use simulation seconds. Compare them with the same snapshot's `game_time`, not `znt.game.time_ms()`.
 {% endhint %}
 
+## Parry readiness
+
+### `znt.game.parry_state()`
+
+**Signature:** `znt.game.parry_state()`
+
+**Arguments:** none
+
+**Valid phase:** top-level code or any callback
+
+**Returns:** `ParrySnapshot | nil`.
+
+**Failure:** returns `nil` when the local player or melee-parry ability cannot be resolved.
+
+### `ParrySnapshot`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `present` | `boolean` | Whether the local parry ability entity was resolved |
+| `ready` | `boolean` | Whether the local player is alive, parry is inactive, and the live cooldown has elapsed |
+| `active` | `boolean` | Whether the replicated active-parry modifier is present |
+| `game_time` | `number` | Current local simulation time in seconds |
+| `cooldown_remaining` | `number` | Remaining parry cooldown in seconds, clamped at zero |
+
+```lua
+znt.events.on("pre_move", function()
+    local parry = znt.game.parry_state()
+    if parry and parry.ready then
+        znt.input.parry()
+    end
+end)
+```
+
+`ready` describes the local replicated cooldown and active state. It does not bypass other game rules. `znt.input.parry()` validates this snapshot again immediately before writing the command.
+
 ## Visibility
 
 ### `znt.game.is_visible(entity_index)`

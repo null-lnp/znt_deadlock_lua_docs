@@ -114,7 +114,7 @@ end
 
 ## `znt.input.parry()`
 
-Compatibility shortcut for `znt.input.tap("parry")`.
+Readiness-aware shortcut for requesting the named `parry` action.
 
 **Signature:** `znt.input.parry()`
 
@@ -122,9 +122,11 @@ Compatibility shortcut for `znt.input.tap("parry")`.
 
 **Valid phase:** `pre_move` or `post_move`
 
-**Returns:** `boolean` — whether the parry request was accepted.
+**Returns:** `boolean` — `true` only when the local parry ability is ready and the active command accepted the request.
 
-**Failure:** returns `false` when no command is active.
+**Failure:** returns `false` when `znt.game.parry_state()` is unavailable or not ready, or when no command is active.
+
+Use `znt.game.parry_state()` when a script also needs the live cooldown value. `znt.input.tap("parry")` remains the lower-level named-action request and does not perform this readiness check.
 
 ## Timing guidance
 
