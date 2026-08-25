@@ -191,6 +191,8 @@ end
 | `slot` | `integer` | Active-item slot from `1` through `4` |
 | `designer_name` | `string` | Stable internal item identifier |
 | `charges` | `integer` | Replicated remaining charge count |
+| `imbued_ability_slot` | `integer` | Bound signature slot `1` through `4` when exactly one binding is replicated; otherwise `0` |
+| `imbued_ability_slots` | `integer[]` | One-based array of every replicated bound signature slot; empty when the item has no binding or it is unavailable |
 | `game_time` | `number` | Current local simulation time in seconds |
 | `cooldown_remaining` | `number` | Remaining cooldown in seconds, clamped at zero |
 
@@ -207,11 +209,17 @@ for slot = 1, 4 do
     end
 end
 if echo_shard and echo_shard.ready then
-    znt.input.tap("item" .. echo_shard.slot)
+    for _, ability_slot in ipairs(echo_shard.imbued_ability_slots) do
+        local ability = znt.game.ability(ability_slot)
+        if ability and not ability.ready and ability.cooldown_remaining > 0.0 then
+            znt.input.tap("item" .. echo_shard.slot)
+            break
+        end
+    end
 end
 ```
 
-`ready` describes cooldown state only. Range, targets, silences, and other game rules may still reject an item use.
+Imbuement fields come from the live replicated association selected when the item was purchased. A script should not ask the user to select the same ability again. `ready` describes cooldown state only. Range, targets, silences, and other game rules may still reject an item use; confirm activation through subsequent item or ability snapshots.
 
 ## Primary weapon
 

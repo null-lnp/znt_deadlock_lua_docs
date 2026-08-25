@@ -1,5 +1,5 @@
 ---
-description: Register typed update, command, sound, and rendering callbacks.
+description: Register typed update, command, entity-lifecycle, sound, and rendering callbacks.
 ---
 
 # Callbacks
@@ -16,7 +16,7 @@ Registers one callback for the current script. Registering the same event again 
 
 | Argument | Type | Required | Accepted values |
 | --- | --- | --- | --- |
-| `name` | `string` | Yes | `"update"`, `"pre_move"`, `"post_move"`, `"sound"`, or `"render"` |
+| `name` | `string` | Yes | `"update"`, `"pre_move"`, `"post_move"`, `"sound"`, `"entity_created"`, `"entity_deleted"`, or `"render"` |
 | `callback` | `function` | Yes | Function matching the event signature below |
 
 **Returns:** `boolean` — always `true` after successful registration.
@@ -40,6 +40,8 @@ end)
 | `pre_move` | `function()` | Aim, look, and input that must share the current command |
 | `post_move` | `function()` | Ordinary input and state-machine follow-ups |
 | `sound` | `function(event: SoundEvent)` | Reactions to queued game sounds before the next command is built |
+| `entity_created` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot after an entity is added |
+| `entity_deleted` | `function(event: EntityLifecycleEvent)` | Observe a copied snapshot captured before an entity is removed |
 | `render` | `function()` | Text, geometry, and specialized overlays |
 
 ### `SoundEvent`
@@ -61,6 +63,38 @@ end)
 Sound messages are captured before the game applies them. Zenith drains the queue immediately before the next `pre_move` callback, while that command's input-mutation window is active. A `sound` callback may therefore call `znt.input.tap()`, `hold()`, `clear()`, or `parry()` directly, or record state that the immediately following `pre_move` callback consumes; both approaches affect the same command. Network transit time still applies—the callback cannot run before the remote event reaches the client.
 
 The sound queue holds 64 events. When full, the oldest queued event is discarded.
+
+### `EntityLifecycleEvent`
+
+Both entity-lifecycle callbacks receive the same copied table:
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `entity_index` | `integer` | Entity-list index; the engine may reuse it after deletion |
+| `handle` | `integer` | Full entity handle, including its serial value; use this to pair create and delete events |
+| `designer_name` | `string` | Designer identifier captured while the entity identity was valid; may be empty |
+| `class_name` | `string` | Schema class captured while the entity was valid; may be empty |
+| `time_ms` | `integer` | Monotonic lifecycle-event timestamp in milliseconds |
+
+```lua
+local observed = {}
+
+znt.events.on("entity_created", function(event)
+    if string.find(string.lower(event.class_name), "projectile", 1, true) then
+        observed[event.handle] = true
+        znt.log("projectile created: " .. event.designer_name)
+    end
+end)
+
+znt.events.on("entity_deleted", function(event)
+    if observed[event.handle] then
+        observed[event.handle] = nil
+        znt.log("projectile deleted: " .. event.designer_name)
+    end
+end)
+```
+
+Zenith copies lifecycle data in the engine hook and queues it; Lua never runs inside entity creation or deletion. The queue is drained immediately before the next `pre_move`, so the entity referenced by a delete event may already be gone. Treat every field as diagnostic snapshot data and never assume `znt.game.player(event.entity_index)` still resolves. The lifecycle queue holds 128 events and discards the oldest event when full.
 
 ## Phase rules
 
