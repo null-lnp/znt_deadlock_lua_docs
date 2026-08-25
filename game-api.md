@@ -188,6 +188,10 @@ end
 | --- | --- | --- |
 | `present` | `boolean` | Active-item ability entity is available |
 | `ready` | `boolean` | Replicated item cooldown has elapsed |
+| `selected` | `boolean` | This item is currently selected and held by the local ability component |
+| `channeling` | `boolean` | This item owns the current channel phase |
+| `cast_delaying` | `boolean` | This item owns the current cast-delay phase |
+| `selected_effects_started` | `boolean` | Targeting effects for the selected item have started |
 | `slot` | `integer` | Active-item slot from `1` through `4` |
 | `designer_name` | `string` | Stable internal item identifier |
 | `charges` | `integer` | Replicated remaining charge count |
@@ -195,6 +199,8 @@ end
 | `imbued_ability_slots` | `integer[]` | One-based array of every replicated bound signature slot; empty when the item has no binding or it is unavailable |
 | `game_time` | `number` | Current local simulation time in seconds |
 | `cooldown_remaining` | `number` | Remaining cooldown in seconds, clamped at zero |
+| `cast_range` | `number` | Live item cast range after contextual range scaling; `0` when unavailable |
+| `targeting_cone_angle` | `number` | Live targeting-cone half-angle in degrees; `0` when unavailable |
 
 Do not assume an item occupies a fixed slot. Search all four snapshots by `designer_name`, then use the returned `slot` with the matching named item action:
 
@@ -219,7 +225,7 @@ if echo_shard and echo_shard.ready then
 end
 ```
 
-Imbuement fields come from the live replicated association selected when the item was purchased. A script should not ask the user to select the same ability again. `ready` describes cooldown state only. Range, targets, silences, and other game rules may still reject an item use; confirm activation through subsequent item or ability snapshots.
+Imbuement fields come from the live replicated association selected when the item was purchased. A script should not ask the user to select the same ability again. `ready` describes cooldown state only, while `selected` confirms that a targeted item is actually being held. Range, targets, silences, and other game rules may still reject an item use; confirm activation through subsequent item or ability snapshots.
 
 ## Primary weapon
 

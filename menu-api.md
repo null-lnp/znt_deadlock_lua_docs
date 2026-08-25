@@ -54,6 +54,34 @@ Adds a script tab associated with a hero portrait.
 A hero tab changes presentation only. It does not stop callbacks on other heroes. Guard logic with `znt.game.is_hero()`.
 {% endhint %}
 
+## `znt.menu.add_item_tab(designer_name, name, callback)`
+
+Adds a script tab associated with an item icon.
+
+**Signature:** `znt.menu.add_item_tab(designer_name, name, callback)`
+
+**Valid phase:** top-level registration is recommended
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `designer_name` | `string` | Yes | Stable item identifier, up to 127 characters |
+| `name` | `string` | Yes | Non-empty tab name, up to 63 characters |
+| `callback` | `function()` | Yes | Function that submits this tab's widgets |
+
+**Returns:** `boolean` — `true` after successful registration. Registering the same name replaces that script's existing tab callback.
+
+**Failure:** invalid arguments or exceeding tab limits raises a script error. Known items use their real item-atlas icon; unsupported designer names fall back to the generic script icon.
+
+```lua
+znt.menu.add_item_tab("upgrade_containment", "Slowing Hex", function()
+    local enabled = znt.menu.checkbox("enabled", "Enabled", true)
+end)
+```
+
+{% hint style="warning" %}
+An item tab changes presentation only. Search `znt.game.active_item(1)` through `znt.game.active_item(4)` for the live inventory slot before requesting an item action.
+{% endhint %}
+
 ## `znt.menu.checkbox(key, label, default)`
 
 **Signature:** `znt.menu.checkbox(key, label, default)`

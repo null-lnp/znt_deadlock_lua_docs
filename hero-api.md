@@ -162,6 +162,45 @@ Checks the current distance against an ability's live cast range.
 
 **Failure:** returns `nil` when required live data is unavailable. Invalid arguments raise a script error.
 
+## `znt.hero.item_target(item_slot)`
+
+Finds the nearest visible enemy inside an active item's live targeting cone.
+
+**Signature:** `znt.hero.item_target(item_slot)`
+
+**Valid phase:** top-level code or any callback; refresh it in the command that may activate or confirm the item
+
+| Argument | Type | Required | Accepted values |
+| --- | --- | --- | --- |
+| `item_slot` | `integer` | Yes | Active-item inventory slot `1` through `4` |
+
+**Returns:** `ItemTargetSnapshot | nil`.
+
+### `ItemTargetSnapshot`
+
+| Field | Type | Description |
+| --- | --- | --- |
+| `valid` | `boolean` | Whether a cone candidate resolved |
+| `in_range` | `boolean` | Whether the candidate is inside the live item cast range |
+| `path_clear` | `boolean` | Whether the game ray trace and Fissure-wall checks passed |
+| `index` | `integer` | Candidate player entity index |
+| `distance` | `number` | Current target distance |
+| `cast_range` | `number` | Live item range after contextual range scaling |
+| `cone_angle` | `number` | Live targeting-cone half-angle in degrees |
+| `angular_error` | `number` | Candidate angle from the active camera direction |
+
+**Failure:** returns `nil` when the item has no supported cone/range data or no visible enemy is inside the cone. An invalid slot raises a script error.
+
+```lua
+local item = znt.game.active_item(2)
+local target = item and znt.hero.item_target(item.slot) or nil
+
+if item and item.ready and target and target.valid and
+    target.in_range and target.path_clear then
+    znt.input.tap("item" .. item.slot)
+end
+```
+
 ## `znt.hero.hook(ability_slot)`
 
 Returns Bebop's confirmed hook state.

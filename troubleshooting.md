@@ -73,7 +73,7 @@ Use `znt.game.time_ms()` for script timers. Use an ability, active-item, or weap
 
 ## A menu widget fails
 
-- Call widgets only from the callback registered with `add_tab()` or `add_hero_tab()`.
+- Call widgets only from the callback registered with `add_tab()`, `add_hero_tab()`, or `add_item_tab()`.
 - Keep combo option counts from 1 through 16.
 - Use a zero-based combo default within the available options.
 - Keep keybind defaults from `0` through `254`.
