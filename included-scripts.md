@@ -10,7 +10,7 @@ Zenith includes focused scripts that demonstrate complete SDK workflows. Use the
 | --- | --- | --- |
 | `auto_parry.lua` | Replicated melee abilities/modifiers, live local parry readiness, independently selectable heavy/light handling, directional fallbacks, live light-melee cone geometry, optional debug-sector drawing, and accepted-request debouncing | [Game data](game-api.md), [Input](input-api.md), [Drawing](drawing-api.md), [Menu](menu-api.md) |
 | `auto_reload.lua` | Weapon timing and named reload input | [Game data](game-api.md), [Input](input-api.md) |
-| `activator.lua` | Per-item conditions, item-icon tabs, live imbuements, selected-item confirmation, cone targeting, and named item input | [Game data](game-api.md), [Hero assistance](hero-api.md), [Input](input-api.md), [Menu](menu-api.md) |
+| `activator.lua` | Per-item conditions, one icon-grouped Activator page, live imbuements, selected-item confirmation, cone targeting, and named item input | [Game data](game-api.md), [Hero assistance](hero-api.md), [Input](input-api.md), [Menu](menu-api.md) |
 | `bebop_combo.lua` | Immediate/double Bomb setup, shared combo modes, projectile prediction, Hook-entity lifecycle diagnostics, confirmed Hook state, and objective throws | [Callbacks](callbacks-api.md), [Runtime](runtime-api.md), [Hero assistance](hero-api.md), [Input](input-api.md) |
 | `haze_sleep_dagger.lua` | Hero gating, projectile aim, and same-command casting | [Hero scripting guide](hero-scripting-guide.md) |
 | `shiv_serrated_knives.lua` | Charge-aware projectile assistance | [Hero assistance](hero-api.md), [Game data](game-api.md) |
@@ -28,7 +28,7 @@ The sample does not emit routine detection, rejection, or parry logs, keeping th
 
 ## Activator and Bebop combo
 
-Activator is an item-rule host with a compact main page and one real-icon tab per supported item. It owns one configurable combo key. Each item independently chooses **Always** or **Combo key**, so no rule imports another script's shared mode.
+Activator is an item-rule host with one compact **Activator** page. Echo Shard and Slowing Hex render as real-icon sections inside that page instead of additional sidebar tabs. It owns one configurable combo key. Each item independently chooses **Always** or **Combo key**, so no rule imports another script's shared mode.
 
 The **Echo Shard** rule searches all four active-item slots and reads the ability binding selected when the item was purchased. A written command bit is not treated as proof that Echo activated. If the item remains ready and its bound ability remains on cooldown, the rule retries at a short bounded interval while its selected condition is active. A replicated item cooldown or restored ability readiness confirms the request. In **Combo key** mode, the rule remains consumed until the Activator key is released.
 

@@ -1,5 +1,5 @@
 ---
-description: Add native tabs and typed persistent checkboxes, sliders, single- and multi-selectors, keybinds, and text.
+description: Add native tabs, icon-backed item sections, and typed persistent controls.
 ---
 
 # Menu
@@ -81,6 +81,37 @@ end)
 {% hint style="warning" %}
 An item tab changes presentation only. Search `znt.game.active_item(1)` through `znt.game.active_item(4)` for the live inventory slot before requesting an item action.
 {% endhint %}
+
+## `znt.menu.item_section(designer_name, label)`
+
+Adds a compact, non-interactive item header inside the current tab. Known items use their real item-atlas icon; unsupported designer names use the generic script icon. This keeps multi-item hosts on one sidebar page while preserving a clear visual boundary for each rule.
+
+**Signature:** `znt.menu.item_section(designer_name, label)`
+
+**Valid phase:** registered menu-tab callback only
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `designer_name` | `string` | Yes | Stable item identifier containing 1 through 127 characters |
+| `label` | `string` | Yes | Visible section title containing 1 through 63 characters |
+
+**Returns:** nothing.
+
+**Failure:** an empty or oversized string, or calling outside a registered menu callback, raises a script error.
+
+```lua
+znt.menu.add_tab("Activator", function()
+    local enabled = znt.menu.checkbox("enabled", "Enabled", true)
+
+    znt.menu.item_section("upgrade_ability_power_shard", "Echo Shard")
+    local echo_enabled = znt.menu.checkbox("echo_enabled", "Enabled", true)
+
+    znt.menu.item_section("upgrade_containment", "Slowing Hex")
+    local hex_enabled = znt.menu.checkbox("hex_enabled", "Enabled", true)
+end)
+```
+
+`item_section()` affects presentation and search grouping only. It does not locate, equip, activate, or validate the item.
 
 ## `znt.menu.checkbox(key, label, default)`
 

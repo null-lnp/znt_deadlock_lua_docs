@@ -3,7 +3,7 @@
 Build custom Zenith gameplay logic with safe game snapshots, callbacks, named input actions, hero assistance, damage prediction, drawing primitives, and native menu controls.
 
 {% hint style="info" %}
-This book documents Lua SDK version **14**.
+This book documents Lua SDK version **15**.
 {% endhint %}
 
 Scripts run in isolated LuaJIT states and cannot access arbitrary memory, files, DLLs, engine functions, or raw command masks. A failing script is unloaded without taking down other loaded scripts.
@@ -27,7 +27,7 @@ Scripts run in isolated LuaJIT states and cannot access arbitrary memory, files,
 | `znt.hero` | [Hero assistance](hero-api.md) | Targets, aim, projectile prediction, ability/item range, and hero helpers |
 | `znt.damage` | [Damage](damage-api.md) | Reviewed ability prediction and typed-damage evaluation |
 | `znt.draw` | [Drawing](drawing-api.md) | Screen projection, text, lines, circles, rectangles, and overlays |
-| `znt.menu` | [Menu](menu-api.md) | Persistent controls and generic, hero, or item-icon script tabs |
+| `znt.menu` | [Menu](menu-api.md) | Persistent controls, script tabs, and icon-backed item sections |
 
 ## Guides
 
