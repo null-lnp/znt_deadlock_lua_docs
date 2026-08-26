@@ -141,7 +141,7 @@ end
 
 ## `znt.hero.range(target_index, ability_slot)`
 
-Checks the current distance against an ability's live cast range.
+Checks the current distance against an ability's live target range.
 
 **Signature:** `znt.hero.range(target_index, ability_slot)`
 
@@ -160,9 +160,11 @@ Checks the current distance against an ability's live cast range.
 | `in_range` | `boolean` | Whether the target is in range |
 | `index` | `integer` | Resolved target index |
 | `distance` | `number` | Current target distance |
-| `cast_range` | `number` | Live ability cast range |
+| `cast_range` | `number` | Largest applicable live target-range value |
 
-**Failure:** returns `nil` when required live data is unavailable. Invalid arguments raise a script error.
+The SDK evaluates the ability's live `AbilityCastRange`, `CastRange`, `DashRange`, `SlashRange`, and `MeleeAttackLength`, applies rank upgrades and the matching contextual range stat, then selects the largest positive result. An ability-specific reach therefore wins over a shorter generic value; Shiv's Killing Blow is one example.
+
+**Failure:** returns `nil` when every applicable range property or another required live value is unavailable. Invalid arguments raise a script error.
 
 ## `znt.hero.item_target(item_slot)`
 
