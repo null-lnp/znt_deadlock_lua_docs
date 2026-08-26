@@ -19,7 +19,7 @@ Lowercase names are recommended.
 
 `item1` through `item4` map to active-item inventory slots `1` through `4`. Resolve an item's current slot with `znt.game.active_item()` rather than assuming its position.
 
-`alt_cast` is the game's alternate-cast modifier. For a selected friendly-target item whose intended target is the local player, keep it active with `hold()` while the item remains selected. It follows the game action rather than a physical mouse binding.
+`alt_cast` is the game's alternate-cast modifier. For an edge-sensitive selected friendly-target item whose intended target is the local player, emit its initial transition with `press()` and keep it active with `hold()` only on later commands. It follows the game action rather than a physical mouse binding.
 
 ## `znt.input.key_down(virtual_key)`
 
@@ -65,7 +65,7 @@ Reports whether a named action is held in the active game command.
 
 ## `znt.input.tap(action)`
 
-Requests a one-command press.
+Requests press and release in one command.
 
 **Signature:** `znt.input.tap(action)`
 
@@ -78,6 +78,24 @@ Requests a one-command press.
 **Returns:** `boolean` — whether the request was accepted for the active command.
 
 **Failure:** returns `false` when no command is active; an unsupported action or wrong type raises a script error.
+
+## `znt.input.press(action)`
+
+Requests the initial press edge while leaving the named action held in the current command.
+
+**Signature:** `znt.input.press(action)`
+
+**Valid phase:** `pre_move` or `post_move`
+
+| Argument | Type | Required | Description |
+| --- | --- | --- | --- |
+| `action` | `Action` | Yes | Supported named action |
+
+**Returns:** `boolean` — whether the request was accepted for the active command.
+
+**Failure:** returns `false` when no command is active; an unsupported action or wrong type raises a script error.
+
+Use `press()` once when an action distinguishes a new press from an already-held state. Repeating it every command repeats the transition; use `hold()` for subsequent commands instead.
 
 ## `znt.input.hold(action)`
 
@@ -135,13 +153,20 @@ Use `znt.game.parry_state()` when a script also needs the live cooldown value. `
 
 ## Self-cast item example
 
-Select a friendly-target item through its resolved live slot, then wait for replicated selection before holding `alt_cast`:
+Select a friendly-target item through its resolved live slot, then wait for replicated selection. Emit one `alt_cast` press edge and preserve the held state only on later selected commands:
 
 ```lua
+local alt_cast_pressed = false
+
 if item.ready and not item.selected then
+    alt_cast_pressed = false
     znt.input.tap("item" .. item.slot)
 elseif item.ready and item.selected then
-    znt.input.hold("alt_cast")
+    if not alt_cast_pressed then
+        alt_cast_pressed = znt.input.press("alt_cast")
+    else
+        znt.input.hold("alt_cast")
+    end
 end
 ```
 

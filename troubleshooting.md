@@ -30,7 +30,7 @@ Common causes are:
 
 ## Input returns `false`
 
-- Call `tap()`, `hold()`, or `clear()` from `pre_move` or `post_move`.
+- Call `tap()`, `press()`, `hold()`, or `clear()` from `pre_move` or `post_move`.
 - Use `pre_move` when input depends on aim prepared in the same command.
 - Use one of the supported [Action](input-api.md#supported-action-type) strings.
 - Check ability or weapon readiness separately; an accepted request does not bypass game rules.

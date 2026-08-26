@@ -60,7 +60,7 @@ znt.events.on("sound", function(event)
 end)
 ```
 
-Sound messages are captured before the game applies them. Zenith drains the queue immediately before the next `pre_move` callback, while that command's input-mutation window is active. A `sound` callback may therefore call `znt.input.tap()`, `hold()`, `clear()`, or `parry()` directly, or record state that the immediately following `pre_move` callback consumes; both approaches affect the same command. Network transit time still applies—the callback cannot run before the remote event reaches the client.
+Sound messages are captured before the game applies them. Zenith drains the queue immediately before the next `pre_move` callback, while that command's input-mutation window is active. A `sound` callback may therefore call `znt.input.tap()`, `press()`, `hold()`, `clear()`, or `parry()` directly, or record state that the immediately following `pre_move` callback consumes; both approaches affect the same command. Network transit time still applies—the callback cannot run before the remote event reaches the client.
 
 The sound queue holds 64 events. When full, the oldest queued event is discarded.
 
@@ -105,7 +105,7 @@ Debug builds record native entry as `entity lifecycle: stage=hook_entry source=n
 ## Phase rules
 
 - `znt.hero.aim()` and `znt.hero.look_at()` are valid only during `pre_move`.
-- `znt.input.tap()`, `hold()`, and `clear()` need an active command, normally `pre_move` or `post_move`.
+- `znt.input.tap()`, `press()`, `hold()`, and `clear()` need an active command, normally `pre_move` or `post_move`.
 - Drawing submissions and `znt.draw.text_size()` are valid only during `render`.
 - Screen queries and `world_to_screen()` may be called from any callback.
 - Menu widgets are valid only inside their registered menu-tab callback.
