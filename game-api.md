@@ -207,7 +207,7 @@ end
 | `cast_delaying` | `boolean` | This item owns the current cast-delay phase |
 | `selected_effects_started` | `boolean` | Targeting effects for the selected item have started |
 | `slot` | `integer` | Active-item slot from `1` through `4` |
-| `designer_name` | `string` | Stable internal item identifier |
+| `designer_name` | `string` | Stable VData subclass identifier, such as `upgrade_discord`; generic entity names such as `citadel_item` are normalized away |
 | `charges` | `integer` | Replicated remaining charge count |
 | `imbued_ability_slot` | `integer` | Bound signature slot `1` through `4` when exactly one binding is replicated; otherwise `0` |
 | `imbued_ability_slots` | `integer[]` | One-based array of every replicated bound signature slot; empty when the item has no binding or it is unavailable |
@@ -216,7 +216,7 @@ end
 | `cast_range` | `number` | Live item cast range after contextual range scaling; `0` when unavailable |
 | `targeting_cone_angle` | `number` | Live targeting-cone half-angle in degrees; `0` when unavailable |
 
-Do not assume an item occupies a fixed slot. Search all four snapshots by `designer_name`, then use the returned `slot` with the matching named item action:
+Do not assume an item occupies a fixed slot. Search all four snapshots by `designer_name`, then use the returned `slot` with the matching named item action. The identifier comes from the item's subclass data because several active items share the generic `citadel_item` entity name:
 
 ```lua
 local echo_shard = nil
