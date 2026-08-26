@@ -147,7 +147,7 @@ end
 | --- | --- | --- |
 | `present` | `boolean` | Ability entity is available |
 | `learned` | `boolean` | Ability has at least one upgrade point |
-| `ready` | `boolean` | Ability is learned and currently usable by cooldown state |
+| `ready` | `boolean` | Ability is learned and passes the SDK's replicated castability gates; this is normally cooldown state and includes reviewed ability-specific active state where supported |
 | `charges` | `integer` | Current charge count |
 | `upgrade_level` | `integer` | Current displayed ability level |
 | `game_time` | `number` | Current simulation time in seconds |
