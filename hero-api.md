@@ -159,10 +159,10 @@ Checks the current distance against an ability's live target range.
 | `valid` | `boolean` | Whether range resolved |
 | `in_range` | `boolean` | Whether the target is in range |
 | `index` | `integer` | Resolved target index |
-| `distance` | `number` | Current target distance |
-| `cast_range` | `number` | Largest applicable live target-range value |
+| `distance` | `number` | Current horizontal world-space target distance |
+| `cast_range` | `number` | Canonical live target range, including rank and declared stat scaling |
 
-The SDK evaluates the ability's live `AbilityCastRange`, `CastRange`, `DashRange`, `SlashRange`, and `MeleeAttackLength`, applies rank upgrades and the matching contextual range stat, then selects the largest positive result. An ability-specific reach therefore wins over a shorter generic value; Shiv's Killing Blow is one example.
+The SDK prefers the ability's canonical live `AbilityCastRange`, applies rank upgrades, and evaluates that property's declared single-stat scaler directly. Killing Blow therefore combines its base range, its range upgrade, and the current `ETechRange` stat instead of using a fixed hero-specific number. If `AbilityCastRange` is absent, the SDK falls back to the largest positive `CastRange`, `DashRange`, `SlashRange`, or `MeleeAttackLength`. Internal effect radii cannot override an available canonical cast range.
 
 **Failure:** returns `nil` when every applicable range property or another required live value is unavailable. Invalid arguments raise a script error.
 

@@ -60,9 +60,9 @@ The reviewed high-level models currently support:
 - Shiv slot 2, Slice and Dice
 - Shiv slot 4, Killing Blow
 
-Shiv's automatic timing reads the current source-to-target distance and the ability's live cast delay, movement speed, and minimum travel time. Its current and maximum Rage are read directly from the live ability resource. Slice and Dice includes the delayed second hit only when that resource is full. That branch projects regeneration between hits and applies the first hit's live Spirit-resistance reduction before evaluating the echo. Killing Blow evaluates both its normal live Spirit damage and its upgraded maximum-health execute threshold.
+Shiv's automatic timing reads the current source-to-target distance and the ability's live cast delay, movement speed, and minimum travel time. Its current and maximum Rage are read directly from the live ability resource. Slice and Dice includes the delayed second hit only when that resource is full. That branch projects regeneration between hits and applies the first hit's live Spirit-resistance reduction before evaluating the echo. Killing Blow evaluates its live upgraded `Damage`, maximum-health execute threshold, and full-Rage `BuffDamage`. Target mitigation is queried against the attacking pawn so attacker-dependent resistance is included.
 
-At full Rage, `full_rage_damage_bonus` exposes the live `BuffDamage` percentage shown by the game. The same outgoing bonus is already represented by `source_global_scale`, so consumers must not multiply it into the formula again.
+For Killing Blow at full Rage, `full_rage_damage_bonus` exposes the live upgraded `BuffDamage` percentage shown by the game. The same active modifier is already represented by `source_global_scale`, so consumers must not multiply it into the formula again. Slot 2 reports the field as `0.0`, while its calculated damage still contains any outgoing modifier the game natively applies.
 
 ```lua
 local prediction, status = znt.damage.ability(target_index, 4, {
@@ -185,7 +185,7 @@ All fields below exist on a completed prediction.
 | `rage_current` | `number` | Shiv's current live Rage resource; otherwise `0.0` |
 | `rage_max` | `number` | Shiv's live maximum Rage resource; otherwise `0.0` |
 | `rage_fraction` | `number` | Normalized Rage progress from `0.0` through `1.0`; otherwise `0.0` |
-| `full_rage_damage_bonus` | `number` | Active live full-Rage outgoing bonus percentage; `0.0` when Rage is not full |
+| `full_rage_damage_bonus` | `number` | Killing Blow's active upgraded `BuffDamage` percentage; `0.0` for other modeled abilities or when Rage is not full |
 | `conditional_followup` | `boolean` | Whether the prediction includes a currently active conditional follow-up hit |
 | `executes` | `boolean` | Whether projected impact health satisfies the ability's execute condition |
 | `full_rage` | `boolean` | Whether Shiv's live Rage resource is full |
