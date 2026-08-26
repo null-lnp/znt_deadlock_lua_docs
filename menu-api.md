@@ -93,11 +93,11 @@ end)
 An item tab changes presentation only. Search `znt.game.active_item(1)` through `znt.game.active_item(4)` for the live inventory slot before requesting an item action.
 {% endhint %}
 
-## `znt.menu.item_section(designer_name, label)`
+## `znt.menu.item_section(designer_name, label, new_column?)`
 
 Ends the current settings card and begins a separate item card inside the same tab. Its compact, non-interactive header uses the real item-atlas icon when known; unsupported designer names use the generic script icon. This keeps multi-item hosts on one sidebar page while preserving a clear visual boundary for each rule.
 
-**Signature:** `znt.menu.item_section(designer_name, label)`
+**Signature:** `znt.menu.item_section(designer_name, label, new_column?)`
 
 **Valid phase:** registered menu-tab callback only
 
@@ -105,6 +105,7 @@ Ends the current settings card and begins a separate item card inside the same t
 | --- | --- | --- | --- |
 | `designer_name` | `string` | Yes | Stable item identifier containing 1 through 127 characters |
 | `label` | `string` | Yes | Visible section title containing 1 through 63 characters |
+| `new_column` | `boolean` | No | When `true`, begins this section in the tab's right column. Defaults to `false` |
 
 **Returns:** nothing.
 
@@ -119,10 +120,13 @@ znt.menu.add_tab("Activator", function()
 
     znt.menu.item_section("upgrade_containment", "Slowing Hex")
     local hex_enabled = znt.menu.checkbox("hex_enabled", "Enabled", true)
+
+    znt.menu.item_section("upgrade_discord", "Scourge", true)
+    local scourge_enabled = znt.menu.checkbox("scourge_enabled", "Enabled", true)
 end)
 ```
 
-Every call creates a new visually separated card for the controls that follow it. `item_section()` otherwise affects presentation and search grouping only; it does not locate, equip, activate, or validate the item.
+Every call creates a new visually separated card for the controls that follow it. Use `new_column = true` once, on the first section intended for the right side; later sections remain in that column. `item_section()` otherwise affects presentation and search grouping only; it does not locate, equip, activate, or validate the item.
 
 ## `znt.menu.checkbox(key, label, default)`
 

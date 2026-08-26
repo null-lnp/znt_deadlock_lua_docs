@@ -19,7 +19,7 @@ Lowercase names are recommended.
 
 `item1` through `item4` map to active-item inventory slots `1` through `4`. Resolve an item's current slot with `znt.game.active_item()` rather than assuming its position.
 
-`alt_cast` requests the game's alternate-cast action. Use it after a friendly-target item reports `selected = true` when the intended target is the local player. It follows the game action rather than a physical mouse binding.
+`alt_cast` is the game's alternate-cast modifier. For a selected friendly-target item whose intended target is the local player, keep it active with `hold()` while the item remains selected. It follows the game action rather than a physical mouse binding.
 
 ## `znt.input.key_down(virtual_key)`
 
@@ -135,13 +135,13 @@ Use `znt.game.parry_state()` when a script also needs the live cooldown value. `
 
 ## Self-cast item example
 
-Select a friendly-target item through its resolved live slot, then wait for replicated selection before requesting `alt_cast`:
+Select a friendly-target item through its resolved live slot, then wait for replicated selection before holding `alt_cast`:
 
 ```lua
 if item.ready and not item.selected then
     znt.input.tap("item" .. item.slot)
 elseif item.ready and item.selected then
-    znt.input.tap("alt_cast")
+    znt.input.hold("alt_cast")
 end
 ```
 
