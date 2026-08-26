@@ -19,7 +19,7 @@ Lowercase names are recommended.
 
 `item1` through `item4` map to active-item inventory slots `1` through `4`. Resolve an item's current slot with `znt.game.active_item()` rather than assuming its position.
 
-`alt_cast` is the game's alternate-cast modifier. For an edge-sensitive selected friendly-target item whose intended target is the local player, emit its initial transition with `press()` and keep it active with `hold()` only on later commands. It follows the game action rather than a physical mouse binding.
+`alt_cast` is the game's alternate-cast action. A selected friendly-target item's self-cast path consumes a new press edge, so use `press()` after selection and retry it at a bounded interval until replicated state confirms success. A held-only command does not replace that edge. It follows the game action rather than a physical mouse binding.
 
 ## `znt.input.key_down(virtual_key)`
 
@@ -153,19 +153,20 @@ Use `znt.game.parry_state()` when a script also needs the live cooldown value. `
 
 ## Self-cast item example
 
-Select a friendly-target item through its resolved live slot, then wait for replicated selection. Emit one `alt_cast` press edge and preserve the held state only on later selected commands:
+Select a friendly-target item through its resolved live slot, then wait for replicated selection. Retry an `alt_cast` press edge at a bounded interval until selection clears or cooldown/cast state confirms success:
 
 ```lua
-local alt_cast_pressed = false
+local last_alt_cast_at = 0
 
 if item.ready and not item.selected then
-    alt_cast_pressed = false
+    last_alt_cast_at = 0
     znt.input.tap("item" .. item.slot)
 elseif item.ready and item.selected then
-    if not alt_cast_pressed then
-        alt_cast_pressed = znt.input.press("alt_cast")
-    else
-        znt.input.hold("alt_cast")
+    local now = znt.game.time_ms()
+    if last_alt_cast_at == 0 or now - last_alt_cast_at >= 90 then
+        if znt.input.press("alt_cast") then
+            last_alt_cast_at = now
+        end
     end
 end
 ```
