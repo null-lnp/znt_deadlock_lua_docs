@@ -48,13 +48,38 @@ Predicts a supported local ability using a reviewed high-level formula and live 
 | --- | --- | --- | --- | --- |
 | `charge` | `number` or `string` | No | Live current charge | Number from `0.0` through `1.0`, `"current"`, or `"full"` |
 | `hit` | `string` | No | `"head"` | `"head"` or `"body"` |
-| `impact_delay` | `number` | No | `0.0` | `0.0` through `60.0` seconds of health regeneration before impact |
+| `impact_delay` | `number` or `string` | No | `0.0` | `0.0` through `60.0` seconds, or `"auto"` to use the reviewed ability's live cast/travel timing |
 
 **Returns:** `DamagePrediction` on success; `nil, DamageStatus` on failure. Capturing two values is recommended so the same call site handles both cases; the second value is `nil` on success.
 
 **Failure:** invalid argument types or option ranges raise a script error. Valid but unavailable or unsupported data returns `nil, status`.
 
-The reviewed high-level model currently supports Vindicta's slot-4 Assassinate.
+The reviewed high-level models currently support:
+
+- Vindicta slot 4, Assassinate
+- Shiv slot 2, Slice and Dice
+- Shiv slot 4, Killing Blow
+
+Shiv's automatic timing reads the current source-to-target distance and the ability's live cast delay, movement speed, and minimum travel time. Slice and Dice includes the delayed second hit only when Shiv's replicated full-Rage modifier is active. That branch projects regeneration between hits and applies the first hit's live Spirit-resistance reduction before evaluating the echo. Killing Blow evaluates both its normal live Spirit damage and its upgraded maximum-health execute threshold.
+
+```lua
+local prediction, status = znt.damage.ability(target_index, 4, {
+    hit = "body",
+    impact_delay = "auto",
+})
+
+if not prediction then
+    return -- required live data is unavailable; do not guess
+end
+
+if prediction.executes then
+    znt.log("Killing Blow will execute at impact")
+elseif prediction.lethal then
+    znt.log("Killing Blow's normal Spirit damage is lethal")
+end
+```
+
+Assassinate may still provide an explicit timing horizon:
 
 ```lua
 local prediction, status = znt.damage.ability(target_index, 4, {
@@ -152,7 +177,16 @@ All fields below exist on a completed prediction.
 | `health_after` | `number` | Projected health after damage |
 | `lethal_shortfall` | `number` | Additional health damage needed to be lethal |
 | `lethal_health` | `number` | Lethality threshold used by the model |
+| `secondary_health_damage` | `number` | Health damage from an included conditional follow-up hit; otherwise `0.0` |
+| `secondary_impact_delay` | `number` | Seconds from now to that follow-up impact; otherwise `0.0` |
+| `execute_threshold_health` | `number` | Maximum-health execute threshold for the resolved ability; otherwise `0.0` |
+| `conditional_followup` | `boolean` | Whether the prediction includes a currently active conditional follow-up hit |
+| `executes` | `boolean` | Whether projected impact health satisfies the ability's execute condition |
 | `lethal` | `boolean` | Whether the completed prediction is lethal |
+
+For a multi-hit result, `formula_damage`, `after_source`, `mitigated_damage`, and `health_damage` include every modeled hit. `projected_target_health` remains the health immediately before the first hit; `health_after` includes regeneration and damage through the last modeled hit.
+
+The model is exact for the deterministic state captured by the call. A future movement change can still move a target out of Slice and Dice's echo path, so scripts should refresh the prediction immediately before submitting a cast.
 
 ## Draw a completed result
 

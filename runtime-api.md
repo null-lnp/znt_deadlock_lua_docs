@@ -10,12 +10,12 @@ The root `znt` table is available while the script's top-level code is running a
 
 | Type | Value |
 | --- | --- |
-| `integer` | `20` |
+| `integer` | `21` |
 
 This is the public SDK contract version. Test it when a script depends on a recently added API:
 
 ```lua
-local REQUIRED_SDK = 20
+local REQUIRED_SDK = 21
 
 if znt.sdk_version < REQUIRED_SDK then
     error("This script requires SDK version " .. REQUIRED_SDK)

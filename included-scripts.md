@@ -15,7 +15,7 @@ Auto Parry, Auto Reload, and Activator are utility scripts, so their tabs stay v
 | `activator.lua` | Per-item Always/Combo rules, enemy-proximity gates, live inventory slots, selected-item confirmation, health conditions, and self-cast input | [Game data](game-api.md), [Hero assistance](hero-api.md), [Input](input-api.md), [Menu](menu-api.md) |
 | `bebop_combo.lua` | Immediate/double Bomb setup, shared combo modes, projectile prediction, confirmed Hook state, live-range Bomb handoff during the reel, and objective throws | [Runtime](runtime-api.md), [Hero assistance](hero-api.md), [Input](input-api.md) |
 | `haze_sleep_dagger.lua` | Hero gating, projectile aim, and same-command casting | [Hero scripting guide](hero-scripting-guide.md) |
-| `shiv_serrated_knives.lua` | Charge-aware projectile assistance | [Hero assistance](hero-api.md), [Game data](game-api.md) |
+| `shiv_serrated_knives.lua` | Serrated Knives aim assistance plus travel-aware Dash and Killing Blow killsteal | [Hero assistance](hero-api.md), [Game data](game-api.md), [Damage](damage-api.md) |
 | `victor.lua` | One-request-per-hold casting, live stat-scaled radius checks, replicated toggle confirmation, and projected world-radius diagnostics | [Game data](game-api.md), [Input](input-api.md), [Drawing](drawing-api.md) |
 | `vindicta_snipe.lua` | Damage prediction, scope timing, input ownership, and damage preview drawing | [Damage](damage-api.md), [Drawing](drawing-api.md) |
 
@@ -56,6 +56,12 @@ When **Auto cast Ability 3** is enabled and the key remains held, Pain Aura is e
 The replicated Pain Aura modifier confirms whether the toggle is actually active. Once active, cleanup no longer depends on the combo key: after the last enemy leaves the effective radius, the script requests deactivation and waits for replicated confirmation before issuing another toggle request.
 
 **Debug radius** projects two world-space rings around Victor. The stronger inner ring is the exact live game radius; the subtle outer ring is `R + tolerance`. The label reports both values in meters and the confirmed `ON` or `OFF` state.
+
+## Shiv
+
+The Shiv page keeps the held Serrated Knives assistance and adds independent **Dash killsteal** and **Killing Blow killsteal** controls. Both scan visible targets inside the configured FOV, require the live ability range and readiness checks, and use the selected Regular or pSilent aim style in the same command as the cast.
+
+Dash is evaluated first to conserve the ultimate when both abilities are lethal. Its prediction includes the Rage echo, regeneration between hits, and the first hit's Spirit-resistance reduction when the full-Rage modifier is active. Killing Blow evaluates its normal Spirit damage and live execute threshold. Both request automatic cast/travel timing and skip the cast whenever any required damage factor is unavailable. A confirmed request is latched through the readiness transition so a delayed cooldown update cannot emit duplicate casts.
 
 ## Locations
 
